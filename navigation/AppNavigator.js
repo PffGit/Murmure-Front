@@ -29,8 +29,6 @@ import ChatScreen from "../screens/chat/ChatScreen";
 
 // Importer tous les screens : auth,lessons, loading, etc...
 
-
-
 // Use different Stack navigators for web and native platforms
 const Stack = Platform.OS === "web"
   ? createStackNavigator()
@@ -62,11 +60,17 @@ export default function AppNavigator() {
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
-      <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
+      <Stack.Screen
+        name="MeditationPlayer"
+        component={MeditationPlayerScreen}
+      />
 
       {/* Respiration */}
       <Stack.Screen name="RespirationHome" component={RespirationHomeScreen} />
-      <Stack.Screen name="RespirationCountdown" component={RespirationCountdownScreen} />
+      <Stack.Screen
+        name="RespirationCountdown"
+        component={RespirationCountdownScreen}
+      />
 
       {/* Chat */}
       <Stack.Screen name="Chat" component={ChatScreen} />
