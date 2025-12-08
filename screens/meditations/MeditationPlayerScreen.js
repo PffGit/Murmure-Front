@@ -1,27 +1,24 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 import Button from "../../components/Button";
 
 export default function MeditationPlayer({ navigation }) {
   return (
     <View style={styles.container}>
-
       <Text style={styles.title}>Bienvenue dans Meditation</Text>
 
       <Text style={styles.subtitle}>Ecran MeditationPlayer</Text>
 
       {/* Bouton Suivant */}
-          <Button onPress={() => navigation.navigate("Shelves")}
-            label="Retour Etagère"
-             type="primary"/>
-      
-     
+      <Button
+        onPress={() => navigation.navigate("Shelves")}
+        label="Retour Etagère"
+        type="primary"
+      />
+
       {/* Bouton Précédent */}
-             <Button onPress={() => navigation.goBack()}
-         
-             type="back"/>
-      
-     </View>
+      <Button onPress={() => navigation.goBack()} type="back" />
+    </View>
   );
 }
 
