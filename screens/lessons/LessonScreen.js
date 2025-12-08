@@ -39,15 +39,16 @@ Vivre l’instant présent, c’est être pleinement conscient de soi et du mond
 ];
 
 export default function LessonScreen({ navigation, route }) {
-  const insets = useSafeAreaInsets(); //utilisé pour recuperer les dimension de la safeArea de l'iphone
+  const insets = useSafeAreaInsets(); //utilisé pour recuperer les dimension de la safeArea de l'ecran
 
   const chapterIndex = route?.params?.lessonNumber ?? 0; // Use React navigation parameters. Default to 0 if route parameter not specified
   const chapter = chapters[chapterIndex];
 
   return (
     <View style={styles.mainContainer}>
-      <Image style={styles.coco} source={require("../../assets/coco.png")} />
-      <View style={styles.contentContainer}>
+      {/* Top + marginTop dynamic en fonction de l'inset.top */}
+      <Image style={[styles.coco, { top: Math.max(insets.top, 20) }]} source={require("../../assets/coco.png")} />
+      <View style={[styles.contentContainer, { marginTop: Math.max(insets.top + 120, 20) }]}>
         <View style={styles.title}>
           <Text style={styles.titleText}>{chapter.title}</Text>
           <Text style={styles.titleLogo}>{chapter.logo}</Text>
@@ -57,8 +58,8 @@ export default function LessonScreen({ navigation, route }) {
         </ScrollView>
       </View>
 
-      {/* Bouton Précédent/suivants */}
-      <View style={styles.buttonContainer}>
+      {/* marginBottom dynamic en fonction de l'inset.bottom */}
+      <View style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}>
         <Button onPress={() => navigation.goBack()} type="back" />
         <Button onPress={() => navigation.navigate("quizz")} type="next" />
       </View>
@@ -70,20 +71,19 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
     backgroundColor: "lightgreen",
-    position: "relative", //needed for "position:absolute" to work
+    position: "relative", //needed for "coco position:absolute" to work
   },
   coco: {
-    position: "absolute", //needed to put coco over the main container
-    top: 0, //With "position:absolute" attribute we can place the image where we want
+    position: "absolute", //needed to put coco where we want in the main container. Defaut position behavior top: 0
+    right: "10%", //place it 10% to the right of the screen
     width: 130,
     height: 130,
     transform: [{ scaleX: -1 }], //flip image horizontaly
-    right: "10%", //place it 10% to the right of the screen
     zIndex: 2, // This define the priority of the image (2 > 1 so image is in front of contentContainer)
   },
   contentContainer: {
     flex: 1, // Donne tout la hauteur restante au contenu (apres le margin top pour coco et le )
-    marginTop: 120,
+    marginTop: 140,
     backgroundColor: "white",
     borderRadius: 20,
     margin: 20,
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
   },
   contentText: {
-    fontSize: 20,
+    fontSize: 18,
     color: "#666",
     lineHeight: 28,
   },
@@ -112,6 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     backgroundColor: "white",
     borderRadius: 20,
-    padding:10,
+    padding: 10,
   },
 });
