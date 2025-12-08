@@ -30,7 +30,7 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="MeditationHome" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
+      initialRouteName="Home" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
       screenOptions={{ headerShown: false }}
     >
       {/* Home et loading */}
