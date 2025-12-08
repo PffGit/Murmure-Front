@@ -23,9 +23,7 @@ import RespirationCountdownScreen from "../screens/respirations/RespirationCount
 // Chat
 import ChatScreen from "../screens/chat/ChatScreen";
 
-// Importer tous les screens : auth,lessons, loading, etc... 
-
-
+// Importer tous les screens : auth,lessons, loading, etc...
 
 const Stack = createNativeStackNavigator();
 
@@ -51,11 +49,17 @@ export default function AppNavigator() {
 
       {/* Meditation */}
       <Stack.Screen name="MeditationHome" component={MeditationHomeScreen} />
-      <Stack.Screen name="MeditationPlayer" component={MeditationPlayerScreen} />
+      <Stack.Screen
+        name="MeditationPlayer"
+        component={MeditationPlayerScreen}
+      />
 
       {/* Respiration */}
       <Stack.Screen name="RespirationHome" component={RespirationHomeScreen} />
-      <Stack.Screen name="RespirationCountdown" component={RespirationCountdownScreen} />
+      <Stack.Screen
+        name="RespirationCountdown"
+        component={RespirationCountdownScreen}
+      />
 
       {/* Chat */}
       <Stack.Screen name="Chat" component={ChatScreen} />
