@@ -1,12 +1,8 @@
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Button from "../../components/Button";
 import Label from "../../components/Label";
-
-// const chapterTitle = "Qu'est ce que l'instant present ?";
-// const chapterContent =
-//   "L’instant présent désigne le moment que tu vis ici et maintenant, sans te perdre dans le passé ni anticiper l’avenir. C’est ce que tu ressens, vois, entends et vis à cet instant précis. Se concentrer sur l’instant présent aide à réduire le stress et l’anxiété, car tu ne rumines plus ce qui a été ou ce qui pourrait arriver. Vivre l’instant présent, c’est être pleinement conscient de soi et du monde autour de soi, ici et maintenant. Es-tu vraiment dans l’instant présent ?";
 
 const chapters = [
   {
@@ -14,7 +10,9 @@ const chapters = [
     logo: "🌳",
     content: `Murmure vous guide à travers un parcours immersif qui vous aide à explorer vos émotions, comprendre l’anxiété, pratiquer le lâcher-prise et vivre pleinement l’instant présent. 
   
-À chaque étape, des conseils et exercices vous accompagnent pour retrouver calme, sérénité et bien-être. A vous de jouer !`,
+À chaque étape, des conseils et exercices vous accompagnent pour retrouver calme, sérénité et bien-être. 
+
+A vous de jouer !`,
   },
   {
     title: "Chapitre 1: Qu'est ce que l'instant present ?",
@@ -23,7 +21,9 @@ const chapters = [
 
 C’est ce que tu ressens, vois, entends et vis à cet instant précis. Se concentrer sur l’instant présent aide à réduire le stress et l’anxiété, car tu ne rumines plus ce qui a été ou ce qui pourrait arriver. 
 
-Vivre l’instant présent, c’est être pleinement conscient de soi et du monde autour de soi, ici et maintenant. Es-tu vraiment dans l’instant présent ?`,
+Vivre l’instant présent, c’est être pleinement conscient de soi et du monde autour de soi, ici et maintenant. 
+
+Es-tu vraiment dans l’instant présent ?`,
     quizz: {
       question: "Quand tu marches dehors, tu…",
       answers: [
@@ -60,8 +60,8 @@ export default function LessonScreen({ navigation, route }) {
 
       {/* marginBottom dynamic en fonction de l'inset.bottom */}
       <View style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}>
-        <Button onPress={() => navigation.goBack()} type="back" />
-        <Button onPress={() => navigation.navigate("quizz")} type="next" />
+        <Button onPress={() => navigation.goBack()} type="primary" />
+        <Button onPress={() => navigation.navigate("Quizz")} label="suivant" type="next" />
       </View>
     </View>
   );
@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 20,
     margin: 20,
+    marginBottom: 0,
     padding: 20,
     zIndex: 1,
   },
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     margin: 20,
     flexDirection: "row",
     justifyContent: "space-evenly",
-    backgroundColor: "white",
+    backgroundColor: "coral",
     borderRadius: 20,
     padding: 10,
   },
