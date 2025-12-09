@@ -29,7 +29,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
   const [showCongrats, setShowCongrats] = useState(false);
 
   //   Animation cercle= définition du cercleAnim
-  const opacityAnim = useRef(new Animated.Value(1)).current;
+//   const opacityAnim = useRef(new Animated.Value(1)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   // Timer global (idem méditation solo)
@@ -78,6 +78,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
       duration: 5000, //ttes les 5 secs
       useNativeDriver: true,
     }).start();
+
     // Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
   };
 
