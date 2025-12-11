@@ -25,6 +25,7 @@ export default function LessonScreen({ navigation, route }) {
     },
     {
       title: "Chapitre 1: Qu'est ce que l'instant present ?",
+      titleFlash: "Flashcard: Instant Present",
       logo: "🌏",
       content: `L’instant présent désigne le moment que tu vis ici et maintenant, sans te perdre dans le passé ni anticiper l’avenir. \n
   C’est ce que tu ressens, vois, entends et vis à cet instant précis. Se concentrer sur l’instant présent aide à réduire le stress et l’anxiété, car tu ne rumines plus ce qui a été ou ce qui pourrait arriver. \n
@@ -61,8 +62,32 @@ export default function LessonScreen({ navigation, route }) {
         "Tu pratiques un peu, mais tu peux t’améliorer avec des micro-pauses d’attention.",
         "Tu es déjà bien connecté à l’instant présent, continue à cultiver cette habitude !",
       ],
-      flashcard:
-        "L’instant présent désigne le moment que tu vis ici et maintenant, sans te perdre dans le passé ni anticiper l’avenir. C’est ce que tu ressens, vois, entends et vis à cet instant précis. Se concentrer sur l’instant présent aide à réduire le stress et l’anxiété, car tu ne rumines plus ce qui a été ou ce qui pourrait arriver. Vivre l’instant présent, c’est être pleinement conscient de soi et du monde autour de soi, ici et maintenant. Es-tu vraiment dans l’instant présent ?",
+      flashcard: `🔍 Définition
+- Instant présent = ici + Maintenant
+- Pas dans le passé, ni dans le futur 
+
+🎯 Pourquoi ?
+- reduis stress et ruminations
+- Plus de calme et de clarté
+
+🧩 Concepts clés
+- Présence = Conscience + Attention
+- Passé / futur = pensées
+- Instant présent = expérience directe
+
+⚡️ Exemple rapide
+Tu marches → au lieu de penser à « ce que tu dois faire », tu portes attention :
+→ à la sensation des pas,
+→ au bruit autour,
+→ à ta respiration.
+
+📝 Mini-exercice (30 secondes)
+Arrête-toi 5 secondes.
+Observe 3 sensations du corps.
+Note mentalement 2 sons que tu entends.
+Inspire profondément 1 fois.
+
+→ Félicitations, tu viens de revenir à l’instant présent !`,
     },
     // Add more chapters as needed
   ];
@@ -146,10 +171,25 @@ export default function LessonScreen({ navigation, route }) {
     );
   }
 
+  function DisplayFlashcard() {
+    return (
+      <>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>{chapter.titleFlash}</Text>
+          <Text style={styles.titleLogo}>{chapter.logo}</Text>
+        </View>
+        <ScrollView style={styles.scrollView}>
+          <Text style={styles.contentText}>{chapter.flashcard}</Text>
+        </ScrollView>
+      </>
+    );
+  }
+
   function handleNextButton() {
     switch (contentToDisplay) {
       case "lesson":
-        setContentToDisplay("quizz");
+        console.log(chapterIndex);
+        chapterIndex === 0 ? navigation.navigate("Map") : setContentToDisplay("quizz");
         break;
       case "quizzResult":
         setContentToDisplay("flashcard");
@@ -185,7 +225,7 @@ export default function LessonScreen({ navigation, route }) {
             case "quizzResult":
               return DisplayQuizzResult();
             case "flashcard":
-              return <Text>Flashcard</Text>;
+              return DisplayFlashcard();
           }
         })()}
       </View>
