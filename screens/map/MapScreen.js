@@ -1,11 +1,10 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  Pressable,
-} from "react-native";
+import React from 'react';
+import { View, 
+         Text, 
+         StyleSheet,
+         ImageBackground,
+         Image,
+         Pressable, } from "react-native";
 
 import Button from "../../components/Button";
 import Label from "../../components/Label";

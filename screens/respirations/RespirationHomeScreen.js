@@ -1,11 +1,5 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  Pressable,
-  Image,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import Button from "../../components/Button";
 import DurationSelector from "../../components/DurationSelector";
 import { useState } from "react";

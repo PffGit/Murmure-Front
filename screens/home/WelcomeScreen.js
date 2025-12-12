@@ -1,62 +1,19 @@
-
-
-import { View, 
-         Text, 
-         StyleSheet, 
-         ImageBackground } from "react-native";
-import { useEffect, useState } from "react";
-import * as SplashScreen from 'expo-splash-screen';
-import { Asset } from 'expo-asset';
-
-// Empêche le splash screen de se cacher automatiquement
-SplashScreen.preventAutoHideAsync();
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, ImageBackground } from "react-native";
 
 export default function WelcomeScreen({ navigation }) {
-  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        // Précharge les images de l'application, 
-        await Asset.loadAsync([
-
-          // --->  Ajoutez toutes vos autres images ici pour le prechargement <---
-          require('../../assets/paysage-bienvenue.png'),
-          require('../../assets/homescreen.png'),
-          
-        ]);
-        
-        // Garde le splash visible 2 secondes supplémentaires
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-      }
-    }
-
-    prepare();
-  }, []);
-
-  useEffect(() => {
-    if (appIsReady) {
-      // Cache le splash screen natif
-      SplashScreen.hideAsync();
+    // Juste un timer pour la transition visuelle
+    console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,5s...");
+    
+    const timer = setTimeout(() => {
+      console.log("--- [WelcomeScreen] 6. Navigation vers l'ecran principal HOME.");
+      navigation.replace("Home"); // .replace évite de pouvoir revenir en arrière sur l'écran de bienvenue
+    }, 1200); // 1,2 secondes pour le splashscreen
       
-      // Navigue vers Home après 3 secondes
-      const timer = setTimeout(() => {
-        navigation.navigate("Home");
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [appIsReady, navigation]);
-
-  if (!appIsReady) {
-    return null; // Le splash screen natif reste visible
-  }
-
-
+    return () => clearTimeout(timer);
+  }, [navigation]);
 
   return (
     <ImageBackground 
@@ -66,7 +23,6 @@ export default function WelcomeScreen({ navigation }) {
     >
       <View style={styles.texte}>
         <Text style={styles.title}>Bienvenue dans Murmure</Text>
-    
       </View> 
     </ImageBackground>
   )
@@ -80,7 +36,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-
   background: {
     flex: 1,
     width: '100%',
@@ -88,30 +43,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end', 
     alignItems: 'center', 
   },
-
    title: {
     fontSize: 15,
     fontWeight: "bold",
     color: "#d99174",
     textAlign: "center",
   },
-
-
-
-
-
-
-
 });
-
-
-
-
-
-
-
-
-
-
 
 

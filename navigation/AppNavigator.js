@@ -34,13 +34,14 @@ const Stack = createNativeStackNavigator();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "Home"
+      initialRouteName="WelcomeScreen" //Ici chacun met le nom de son screen, comme ça qd on lance expoGo on arrive dessus. A la fin, on mettre "WelcomeScreen"
+
       screenOptions={{ headerShown: false }}
     >
       {/* Page de bienvenue paysage */}
       <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
-{     /* Home et loading */}
+      { /* Home et loading */}
       <Stack.Screen name="Home" component={HomeScreen} />
 
       {/* Chat avec IA A SUPPRIMER!!!!*/}
