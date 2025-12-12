@@ -69,8 +69,18 @@ export default function AppNavigator() {
       <Stack.Screen name="RespirationHome" component={RespirationHomeScreen} />
       <Stack.Screen name="RespirationCountdown" component={RespirationCountdownScreen} />
 
-      {/* Chat */}
-      <Stack.Screen name="Chat" component={ChatScreen} />
+      {/* Chat affiché en modale, depuis le bas*/}
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+           presentation: "modal",
+          headerShown: false,
+          animation: "slide_from_bottom",
+          keyboardHandlingEnabled: false, // <-- Ajoute ça
+          // behavior: "position", //ne pas effacer, indispensable pour KeyAvoindingView
+         }}
+      />
     </Stack.Navigator>
   );
 }

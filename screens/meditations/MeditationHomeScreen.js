@@ -15,7 +15,7 @@ export default function MeditationHomeScreen({ navigation }) {
   const [type, setType] = useState("anxiete");
   const [mode, setMode] = useState("guidee");
   const [duration, setDuration] = useState(5);
-  console.log("type:", type, "mode:", mode, "duration:", duration);
+  // console.log("type:", type, "mode:", mode, "duration:", duration);
 
   const meditationTypes = [
     { label: "Anxiété", value: "anxiete" },
