@@ -24,6 +24,10 @@ import RespirationCountdownScreen from "../screens/respirations/RespirationCount
 // Chat
 import ChatScreen from "../screens/chat/ChatScreen";
 
+//Compte
+import SignUpScreen from "../screens/compte/SignUpScreen";
+import SignInScreen from "../screens/compte/SignInScreen";
+
 // Importer tous les screens : auth,lessons, loading, etc...
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +49,9 @@ export default function AppNavigator() {
       {/* Mon Compte */}
       <Stack.Screen name="Compte" component={CompteScreen} />
 
+      <Stack.Screen name="SignUp" component={SignUpScreen} options={{ headerShown: false }}/>
+
+      <Stack.Screen name="SignIn" component={SignInScreen} options={{ headerShown: false }}/>
 
       {/* Shelves (étagère) */}
       <Stack.Screen name="Shelves" component={ShelvesScreen} />
