@@ -28,10 +28,10 @@ export default function App() {
         // 2. Charger les images ici
         await Asset.loadAsync([
           require('./assets/paysage-bienvenue.png'),
-          require('./assets/homescreen-2.png'),
+          require('./assets/homescreen.png'),
           require('./assets/etagereCoco.png'),
           require('./assets/perroquet.png'),
-          require('./assets/mapscreen-2.png'),
+          require('./assets/map.png'),
           require('./assets/meditation/meditation.png'),
           require('./assets/meditation/meditationBkg.png'),
         ]);

@@ -60,7 +60,9 @@ const InfoBubble = ({ message, visible, onClose }) => {
         activeOpacity={0.9}
       >
         <Text style={styles.infoBubbleText}>{message}</Text>
-        <Text style={styles.infoBubbleClose}>✕</Text>
+
+        {/* Bouton de fermeture */}
+        <Text style={styles.infoBubbleClose}>✕</Text> 
       </TouchableOpacity>
     </Animated.View>
   );
@@ -69,39 +71,46 @@ const InfoBubble = ({ message, visible, onClose }) => {
 const styles = StyleSheet.create({
   infoBubbleContainer: {
     position: 'absolute',
-    top: 120,
+    bottom: 640,
+   
     left: 20,
     right: 20,
     zIndex: 1000,
     alignItems: 'center',
   },
+
   infoBubble: {
     backgroundColor: '#81be83ff',
-    paddingVertical: 15,
-    paddingHorizontal: 25,
-    borderRadius: 25,
+    paddingVertical: 9,        // Réduit de 15 à 12
+    paddingHorizontal: 25,      // Réduit de 25 à 18
+    borderRadius: 20,           // Réduit de 25 à 20
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.7,
     shadowRadius: 4.65,
     elevation: 8,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minWidth: 350,
-    marginTop: 200,
+    minWidth: 380,              //largeur minimale de l'infobulle
+    maxWidth: 400,              // Ajout d'une largeur max
+    marginTop: 220,
   },
+
   infoBubbleText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 14,               // Réduit de 16 à 14
     fontWeight: '600',
     flex: 1,
+    lineHeight: 20,             // Ajout pour un meilleur espacement des lignes
   },
+
   infoBubbleClose: {
     color: '#FFFFFF',
-    fontSize: 18,
+    fontSize: 16,               // Réduit de 18 à 16
     fontWeight: 'bold',
-    marginLeft: 15,
+    marginLeft: 15,             // Réduit de 19 à 15
+    marginBottom: 150,
     opacity: 0.7,
   },
 });
