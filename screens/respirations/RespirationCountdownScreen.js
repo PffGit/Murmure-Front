@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, ImageBackground } from "react-native";
 import Button from "../../components/Button";
 
 import ConfirmModal from "../../components/ConfirmModal";

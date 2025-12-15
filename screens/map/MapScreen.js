@@ -1,10 +1,5 @@
-import React from 'react';
-import { View, 
-         Text, 
-         StyleSheet,
-         ImageBackground,
-         Image,
-         Pressable, } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Image, Pressable } from "react-native";
+import { useDispatch } from "react-redux";
 
 import Button from "../../components/Button";
 import Label from "../../components/Label";
@@ -50,10 +45,15 @@ export default function MapScreen({ navigation }) {
           <Text style={styles.subtitle}>Ecran Map</Text> */}
 
         {/* Labels vers Meditations, respirations, chat */}
-        <Label
-          style={styles.chapitre1}
-          onPress={() => navigation.navigate("Lesson", { lessonNumber: 1 })}
-        >
+        <Label style={styles.chapitre3} onPress={() => navigation.navigate("Lesson", { lessonNumber: 2 })}>
+          Chapitre 3
+        </Label>
+
+        <Label style={styles.chapitre2} onPress={() => navigation.navigate("Lesson", { lessonNumber: 1 })}>
+          Chapitre 2
+        </Label>
+
+        <Label style={styles.chapitre1} onPress={() => navigation.navigate("Lesson", { lessonNumber: 0 })}>
           Chapitre 1
         </Label>
 
@@ -125,10 +125,36 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 0.4,
   },
+
+  subtitle: {
+    fontSize: 16,
+    color: "#666",
+  },
+
   chapitre1: {
     position: "absolute",
     top: 375, // Plus la valeur est élevée, plus le texte descend depuis le bas
     left: 25,
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+    // textDecorationLine: "underline",
+  },
+
+  chapitre2: {
+    position: "absolute",
+    top: 250, // Plus la valeur est élevée, plus le texte descend depuis le bas
+    left: 100,
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+    // textDecorationLine: "underline",
+  },
+
+  chapitre3: {
+    position: "absolute",
+    top: 210, // Plus la valeur est élevée, plus le texte descend depuis le bas
+    right: 100,
     color: "#000000",
     fontSize: 18,
     fontWeight: "bold",
