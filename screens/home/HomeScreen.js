@@ -91,6 +91,9 @@ const PulsingButton = ({ onPress, color, style }) => {
 
 export default function HomeScreen({ navigation }) {
 
+  // Récupérer le statut de connexion depuis Redux
+  const { isConnected, username } = useSelector((state) => state.userConnection);
+
   // integration de l'infobulle
     const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' });
 
@@ -103,61 +106,41 @@ export default function HomeScreen({ navigation }) {
       checkVisitCount();
     }, []);
 
+    
+    // NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur
     const checkVisitCount = () => {
-      // console.log('[HomeScreen -- Infobulle] ⏳ Début lecture AsyncStorage...');
-      
-      AsyncStorage.getItem('visitCount') // permet de recuperer le compteur de visites
-      // rappel. asyncStorage est une API de stockage local pour react native; similaire au localStorage du navigateur web.
-        .then((visitCount) => {
-          // console.log(`[HomeScreen -- Infobulle] Valeur brute récupérée du stockage: ${visitCount}`);
-          
-          const count = visitCount ? parseInt(visitCount) : 0; // ParseInt est une fonction JS qui convertit une chaine de caractères (string) en nombre entier
-          const newCount = count + 1; // a chaque visite on incrémente le compteur de 1.
-          
-          console.log(`[HomeScreen -- Infobulle] Calcul compteur: Ancien=${count} -> Nouveau=${newCount}`);
+      // Vérifier si l'utilisateur est connecté
+      AsyncStorage.getItem('userToken') // Récupère le token de l'utilisateur depuis AsyncStorage
+      // rappel: asyncStorage est utilisé pour stocker des données localement sur le device; similaire au localStorage du navigateur web
+        
+        .then((userToken) => {
+          const isLoggedIn = userToken !== null; // Si le token existe, l'utilisateur est connecté
 
-          return AsyncStorage.setItem('visitCount', newCount.toString()) //fonction toString() permet de convertir un nombre en chaîne de caractères => nécessaire car AsyncStorage ne stocke que des chaînes de caractères
-             .then(() => {
-              // console.log('[HomeScreen -- Infobulle] Nouveau compteur sauvegardé dans AsyncStorage');
-              
-              if (newCount === 1) { // condition pour la 1ère visite
-                // console.log('[HomeScreen -- Infobulle] Condition: 1ère visite -> Mise à jour state "Bienvenue sur Murmure"');
-                setInfoBubble({ 
-                  visible: true, 
-                  message: "Bienvenue sur Murmure!\n\nSouhaitez vous me parler ou commencer votre parcours?\n\nJe vous invite à cliquer sur l'étagère ou la porte vers le jardin.\n\n N'hésites pas à venir me parler!" 
-                });
-              
-              } else if (newCount >= 2) { // condition pour les visites suivantes
-                // console.log('[HomeScreen -- Infobulle] Condition: 2ème visite ou plus -> Mise à jour state "Ravi de vous revoir"');
-                setInfoBubble({ 
-                  visible: true, 
-                  message: "✨ Ravi de vous revoir! ✨\n\nComment allez-vous aujourd'hui?\n\nSouhaitez-vous continuer vers votre parcours ou initier une séance de relaxation?\n\nOu peut-être préférez-vous me parler?" 
-                });
-              }
+          if (!isLoggedIn) { // Si l'utilisateur n'est PAS connecté -> toujours message de bienvenue
+              console.log('[HomeScreen -- Infobulle]  Utilisateur NON connecté -> Message de bienvenue');
+            setInfoBubble({
+              visible: true,
+              message: "✨ Bienvenue sur Murmure! ✨\n\nSouhaitez vous me parler ou commencer votre parcours?\nJe vous invite à cliquer sur l'étagère ou la porte vers le jardin.\n\n À très vite ! 😊"
             });
+          } else {// Si l'utilisateur EST connecté -> message "ravi de vous revoir"
+              console.log('[HomeScreen -- Infobulle] ✅ Utilisateur connecté -> Message "Ravi de vous revoir"');
+            setInfoBubble({
+              visible: true,
+              message: "✨ Ravi de vous revoir! ✨\n\nPrêt à continuer?\n\nSouhaitez-vous continuer vers votre parcours ou initier une séance de relaxation?\n\nOu peut-être préférez-vous me parler?"
+            });
+          }
         })
-        .catch((error) => {
-          console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la vérification des visites:', error);
+        .catch((error) => { // Gestion des erreurs
+          console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la vérification:', error);
         });
     };
 
-    const closeInfoBubble = () => {
+    const closeInfoBubble = () => { 
         // console.log('[HomeScreen -- Infobulle] 🔇 Appel de closeInfoBubble -> Reset du state');
       setInfoBubble({ visible: false, message: '' });
     };
 
-    // FONCTION TEMPORAIRE DE TEST - À commenter plus tard // sert à réinitialiser le compteur de visites
-    const resetVisitCount = () => {
-      AsyncStorage.removeItem('visitCount')
-        .then(() => {
-          console.log('[HomeScreen -- Infobulle] 🔄 Compteur réinitialisé ! Rechargez la page pour tester.');
-          Alert.alert('Compteur réinitialisé', 'Fermes et rouvres l\'écran pour voir la bulle de bienvenue.');
-        })
-        .catch((error) => {
-          console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la réinitialisation:', error);
-        });
-    };
-
+  
     return (
       <ImageBackground style={styles.background}
           source={require('../../assets/homescreen.png')}
@@ -186,13 +169,13 @@ export default function HomeScreen({ navigation }) {
                         }}
                     />
 
-                  {/* BOUTON TEMPORAIRE DE TEST POUR REINITIALISER LE COMPTEUR - À commenter plus tard  */}
-                    <Button
-                        label="Reset Bulle"
-                        type="primary"
-                        style={styles.resetButton}
-                        onPress={resetVisitCount}
-                    />
+                  {/* Affichage du statut de connexion */}
+                    {isConnected && (
+                      <Text style={styles.compteStatus}>
+                        connected
+                        
+                      </Text>
+                    )}
 
                       <View style={styles.header}>
                           <View style={styles.messageBubble}>
@@ -204,7 +187,7 @@ export default function HomeScreen({ navigation }) {
                               </Text> */}
                       
                               {/* Perroquet : ouvre screen Chat */}
-                                <Pressable onPress={() => {navigation.navigate("ChatScreen")}}>
+                                <Pressable onPress={() => {navigation.navigate("Chat")}}>
                                     <Image
                                       source={require("../../assets/chat/perroquet.png")}
                                       style={styles.perroquet}
@@ -213,17 +196,17 @@ export default function HomeScreen({ navigation }) {
                           </View>
                       </View>
 
-                    <View style={styles.messageia}>
+                    {/* <View style={styles.messageia}>
                       <Text
                         style={styles.dialogueperroquet}
                         placeholderTextColor="#224C4A"
                         onPress={() => {
                           console.log("ok le lien vers chatscreen fonctionne!");
-                          navigation.navigate("ChatScreen");
+                          navigation.navigate("Chat");
                         }}>
-                        {/* Ecris moi si tu veux me parler ! */}
+                        {/* Ecris moi si tu veux me parler ! *
                       </Text>
-                    </View>  
+                    </View>   */}
                       
 
                   {/* --- BOUTON 1 (Bas à gauche) --- */}
@@ -265,7 +248,7 @@ const styles = StyleSheet.create({
 
   perroquet: {
     position: "absolute",
-    top: 10,
+    top: 163,
     left: 90,
     width: 100,
     height: 100,
@@ -293,6 +276,8 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     width: "100%",
     position: "relative",
+    // left:20,
+    // marginBottom: 100,
   },
 
   //  messageText: {
@@ -315,16 +300,16 @@ const styles = StyleSheet.create({
     // alignSelf: 'center ',
   // },
 
-  dialogueperroquet: {
-    position: "absolute",
-    top: 6,
-    color: "#224C4A",
-    fontSize: 15.5,
-    fontWeight: "500",
-    textAlign: "center",
-    lineHeight: 21,
-    marginLeft: 20,
-  },
+  // dialogueperroquet: {
+  //   position: "absolute",
+  //   top: 6,
+  //   color: "#224C4A",
+  //   fontSize: 15.5,
+  //   fontWeight: "500",
+  //   textAlign: "center",
+  //   lineHeight: 21,
+  //   marginLeft: 20,
+  // },
 
   header: {
     paddingTop: 100,
@@ -333,7 +318,7 @@ const styles = StyleSheet.create({
 
   compteButton: {
     position: "absolute",
-    top: 5,
+    top: 1,
     right: 60,
     marginBottom: 50,
     marginTop: 30,
@@ -343,7 +328,7 @@ const styles = StyleSheet.create({
   compteStatus: {
     position: "absolute",
     top: 5,
-    left: 160,
+    left: 2,
     marginTop: 44,
     fontSize: 16,
     fontWeight: "600",
@@ -352,17 +337,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     zIndex: 100,
   },
-
-  // STYLE TEMPORAIRE - À supprimer plus tard
-  resetButton: {
-    position: 'absolute',
-    top: 5,
-    left: 60,
-    marginBottom: 50,
-    marginTop: 30,
-    zIndex: 100,
-  },
- 
 
   // Styles du composant PulsingButton
   buttonWrapper: {
@@ -395,13 +369,20 @@ const styles = StyleSheet.create({
   },
 
   pulsingEtagere: {
-    bottom: 300,    
-    right: 130,     
+    bottom: 370,    
+    right: 140,     
   },
 
   pulsingCarte: {
-    bottom: 300,    
+    bottom: 370, 
+    left: 130,   
   },
 
+
+  infoBubble: {
+    // backgroundColor: "#D8F0E4",
+    paddingVertical: 70,
+    paddingHorizontal: 20,
+  },
 
 });

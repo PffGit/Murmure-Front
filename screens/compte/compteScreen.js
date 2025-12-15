@@ -12,6 +12,7 @@ import { logout, updateUsername as updateUsernameAction } from "../../reducers/u
 import Button from "../../components/Button";
 import ConfirmModal from "../../components/ConfirmModal";
 import { BACKEND_ADDRESS } from "../../config";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -68,8 +69,19 @@ export default function CompteScreen({ navigation }) {
   };
 
   const confirmLogout = () => {
-    
+
+    // Supprimer le token de Redux
     dispatch(logout());
+
+    // Supprimer le token d'AsyncStorage
+    AsyncStorage.removeItem('userToken')
+      .then(() => {
+        console.log('[Logout] ✅ Token supprimé d\'AsyncStorage');
+      })
+      .catch((error) => {
+        console.error('[Logout] ❌ Erreur suppression token:', error);
+      });
+
     setShowGoodbyeModal(false);
     navigation.navigate("Home");
   };
@@ -102,8 +114,19 @@ export default function CompteScreen({ navigation }) {
 
 const handleAccountDeletedConfirm = () => {
   setShowAccountDeletedModal(false);
- 
+
+  // Supprimer le token de Redux
   dispatch(logout());
+
+  // Supprimer le token d'AsyncStorage
+  AsyncStorage.removeItem('userToken')
+    .then(() => {
+      console.log('[DeleteAccount] ✅ Token supprimé d\'AsyncStorage');
+    })
+    .catch((error) => {
+      console.error('[DeleteAccount] ❌ Erreur suppression token:', error);
+    });
+
   navigation.navigate("Home");
 };
 

@@ -113,7 +113,7 @@ export default function ShelvesScreen({ navigation }) {
           style={styles.pulsingChatScreen}
           onPress={() => {
             console.log("ok lien vers ChatScreen fonctionnel");
-            navigation.navigate("ChatScreen");
+            navigation.navigate("Chat");
           }}
           // children="Carte"
         />
