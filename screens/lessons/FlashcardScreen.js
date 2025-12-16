@@ -16,36 +16,53 @@ import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
 import { useSelector } from 'react-redux';
 
-export default function LessonScreen({ navigation, route }) {
+export default function FlashcardScreen({ navigation }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
   const { userToken } = useSelector((state) => state.userConnection || {});
   const chapters = useSelector((state) => state.chapters);
 
-  const [contentToDisplay, setContentToDisplay] = useState('quiz');
-  const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
-  const [quizQuestionChoice, setQuizQuestionChoice] = useState([]);
+  const [contentToDisplay, setContentToDisplay] = useState('list');
+  const [chapterIndex, setChapterIndex] = useState(0);
 
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
-  const [exitBehavior, setExitBehavior] = useState();
 
-  // Use React navigation parameters. Default to 0 if route parameter not specified
-  const chapterIndex = route?.params?.lessonNumber ?? 0;
-  const chapter = chapters[chapterIndex] ? chapters[chapterIndex] : chapters[0];
+  function DisplayList() {
+    const flashcardButtons = chapters.map((chap, i) => {
+      return (
+        <Button
+          key={i}
+          onPress={() => {
+            setChapterIndex(i);
+            setContentToDisplay('flashcard');
+          }}
+          type="question"
+          label={chap.title}
+        />
+      );
+    });
 
-  function DisplayContent(type) {
-    const isFlashcard = type === 'flashcard';
-    const title = isFlashcard ? chapter.flashcard.title : chapter.title;
+    return (
+      <>
+        <View style={styles.title}>
+          <Text style={styles.titleQuestion}>Flashcard List</Text>
+        </View>
+        <View style={styles.questionContainer}>{flashcardButtons}</View>
+      </>
+    );
+  }
+
+  function DisplayFlashcard() {
+    const chapter = chapters[chapterIndex];
+    const title = chapter.flashcard.title;
     const logo = chapter.logo;
-    const contentArray = isFlashcard
-      ? [
-          chapter.flashcard.definition,
-          chapter.flashcard.why,
-          chapter.flashcard.keyConcept,
-          chapter.flashcard.exemple,
-          chapter.flashcard.exercice,
-        ]
-      : [chapter.content];
+    const contentArray = [
+      chapter.flashcard.definition,
+      chapter.flashcard.why,
+      chapter.flashcard.keyConcept,
+      chapter.flashcard.exemple,
+      chapter.flashcard.exercice,
+    ];
 
     return (
       <>
@@ -83,67 +100,32 @@ export default function LessonScreen({ navigation, route }) {
     );
   }
 
-  function DisplayQuiz() {
-    function handleQuestionChoice(qIndex, choice) {
-      const updatedChoices = [...quizQuestionChoice];
-      updatedChoices[qIndex] = choice;
-      setQuizQuestionChoice(updatedChoices);
-      updatedChoices.length >= chapter.quiz.questions.length
-        ? setContentToDisplay('flashcard')
-        : setQuizQuestionIndex(quizQuestionIndex + 1);
-    }
-
-    const quizButtons = chapter.quiz.questions[quizQuestionIndex].answers.map(
-      (e, i) => {
-        return (
-          <Button
-            key={i}
-            onPress={() => handleQuestionChoice(quizQuestionIndex, i)}
-            type="question"
-            label={e}
-          />
-        );
-      }
-    );
-
-    return (
-      <>
-        <View style={styles.title}>
-          <Text style={styles.titleQuestion}>
-            {chapter.quiz.questions[quizQuestionIndex].question}
-          </Text>
-        </View>
-        <View style={styles.questionContainer}>{quizButtons}</View>
-      </>
-    );
-  }
-
   async function handleNextButton() {
     switch (contentToDisplay) {
       case 'flashcard':
         // Mettre à jour progressNb
-        if (userToken) {
-          try {
-            const response = await fetch(`${BACKEND_ADDRESS}/users/progress`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                progressNb: chapter.index,
-                token: userToken,
-              }),
-            });
-            const data = await response.json();
-            if (data.result) {
-              console.log('progressNb updated to:', chapter.index);
-            } else {
-              console.log('Error updating progressNb:', data.error);
-            }
-          } catch (error) {
-            console.log('Fetch error updating progressNb:', error);
-          }
-        }
+        // if (userToken) {
+        //   try {
+        //     const response = await fetch(`${BACKEND_ADDRESS}/users/progress`, {
+        //       method: 'PUT',
+        //       headers: {
+        //         'Content-Type': 'application/json',
+        //       },
+        //       body: JSON.stringify({
+        //         progressNb: chapter.index,
+        //         token: userToken,
+        //       }),
+        //     });
+        //     const data = await response.json();
+        //     if (data.result) {
+        //       console.log('progressNb updated to:', chapter.index);
+        //     } else {
+        //       console.log('Error updating progressNb:', data.error);
+        //     }
+        //   } catch (error) {
+        //     console.log('Fetch error updating progressNb:', error);
+        //   }
+        // }
         navigation.navigate('Shelves');
         break;
     }
@@ -153,10 +135,7 @@ export default function LessonScreen({ navigation, route }) {
     <View style={styles.mainContainer}>
       {/* Coco */}
       <TouchableOpacity
-        onPress={() => {
-          setExitBehavior(() => () => navigation.pop(2));
-          setShowExitPopup(true);
-        }}
+        onPress={() => navigation.navigate('Chat')}
         style={[styles.coco, { top: Math.max(insets.top, 20) }]}
       >
         <Image
@@ -174,14 +153,10 @@ export default function LessonScreen({ navigation, route }) {
       >
         {(() => {
           switch (contentToDisplay) {
-            case 'lesson':
-              return DisplayContent('lesson');
-            case 'quiz':
-              return DisplayQuiz();
-            case 'quizResult':
-              return DisplayQuizResult();
+            case 'list':
+              return DisplayList();
             case 'flashcard':
-              return DisplayContent('flashcard');
+              return DisplayFlashcard();
           }
         })()}
       </View>
@@ -193,13 +168,12 @@ export default function LessonScreen({ navigation, route }) {
         <Button
           style={{ width: 110 }}
           onPress={() => {
-            setExitBehavior(() => () => navigation.goBack());
             setShowExitPopup(true);
           }}
           type="primary"
           label="Quitter"
         />
-        {contentToDisplay !== 'quiz' ? (
+        {contentToDisplay !== 'list' ? (
           <Button
             style={{ width: 110 }}
             onPress={() => handleNextButton()}
@@ -215,7 +189,7 @@ export default function LessonScreen({ navigation, route }) {
         visible={showExitPopup}
         message="Voulez-vous arrêter la leçon ?"
         onCancel={() => setShowExitPopup(false)}
-        onConfirm={() => exitBehavior()}
+        onConfirm={() => navigation.goBack()}
       />
     </View>
   );
