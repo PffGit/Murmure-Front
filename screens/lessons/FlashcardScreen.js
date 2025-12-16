@@ -19,13 +19,20 @@ import { useSelector } from 'react-redux';
 export default function FlashcardScreen({ navigation }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
-  const { userToken } = useSelector((state) => state.userConnection || {});
+  const { userToken, userProgress } = useSelector(
+    (state) => state.userConnection || {}
+  );
   const chapters = useSelector((state) => state.chapters);
 
   const [contentToDisplay, setContentToDisplay] = useState('list');
   const [chapterIndex, setChapterIndex] = useState(0);
 
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
+
+  if (userToken) {
+    console.log('token present');
+    console.log(userProgress)
+  }
 
   function DisplayList() {
     const flashcardButtons = chapters.map((chap, i) => {
@@ -54,32 +61,24 @@ export default function FlashcardScreen({ navigation }) {
 
   function DisplayFlashcard() {
     const chapter = chapters[chapterIndex];
-    const title = chapter.flashcard.title;
-    const logo = chapter.logo;
-    const contentArray = [
-      chapter.flashcard.definition,
-      chapter.flashcard.why,
-      chapter.flashcard.keyConcept,
-      chapter.flashcard.exemple,
-      chapter.flashcard.exercice,
-    ];
-
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleText}>{title}</Text>
-          <Text style={styles.titleLogo}>{logo}</Text>
+          <Text style={styles.titleText}>{chapter.flashcard.title}</Text>
+          <Text style={styles.titleLogo}>{chapter.logo}</Text>
         </View>
         <View style={styles.scrollContainer}>
           <ScrollView
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
           >
-            {contentArray.map((text, i) => (
-              <Text style={styles.contentText} key={i}>
-                {text}
-              </Text>
-            ))}
+            <Text style={styles.contentText}>
+              {chapter.flashcard.definition}
+              {chapter.flashcard.why}
+              {chapter.flashcard.keyConcept}
+              {chapter.flashcard.exemple}
+              {chapter.flashcard.exercice}
+            </Text>
           </ScrollView>
 
           {/* Masque de dégradé Top */}

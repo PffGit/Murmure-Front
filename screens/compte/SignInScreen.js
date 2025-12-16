@@ -31,7 +31,13 @@ export default function SignInScreen({ navigation }) {
         if (data.result) {
 
           // Sauvegarder dans Redux
-          dispatch(login({ username: data.username, token: data.token }));
+          dispatch(
+            login({
+              username: data.username,
+              token: data.token,
+              progressNb: data.progressNb,
+            })
+          );
 
           // Sauvegarder le token dans AsyncStorage pour la détection de connexion
           AsyncStorage.setItem('userToken', data.token)
