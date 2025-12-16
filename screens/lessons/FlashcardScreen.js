@@ -1,16 +1,7 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
-
-import { BACKEND_ADDRESS } from '../../config';
 
 import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
@@ -19,22 +10,13 @@ import { useSelector } from 'react-redux';
 export default function FlashcardScreen({ navigation }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
-  const { userToken, userProgress } = useSelector(
-    (state) => state.userConnection || {}
-  );
+  const { userToken, userProgress } = useSelector((state) => state.userConnection || {});
   const chapters = useSelector((state) => state.chapters);
 
   const [contentToDisplay, setContentToDisplay] = useState('list');
   const [chapterIndex, setChapterIndex] = useState(0);
 
-  const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
-  const [showFlashcardLockedModal, setShowFlashcardLockedModal] =
-    useState(false);
-
-  if (userToken) {
-    console.log('token present');
-    console.log(userProgress);
-  }
+  const [showFlashcardLockedModal, setShowFlashcardLockedModal] = useState(false);
 
   function DisplayList() {
     const flashcardButtons = chapters.map((chap, i) => {
@@ -49,6 +31,7 @@ export default function FlashcardScreen({ navigation }) {
               }}
               type="question"
               label={chap.title}
+              style={{ alignItems: "flexStart" }}
             />
           );
         } else {
@@ -61,7 +44,7 @@ export default function FlashcardScreen({ navigation }) {
               onPress={() => {
                 setShowFlashcardLockedModal(true);
               }}
-              style={{ backgroundColor: 'grey' }}
+              style={{ backgroundColor: '#739C9A', alignItems: 'flexStart' }}
             />
           );
         }
@@ -71,9 +54,9 @@ export default function FlashcardScreen({ navigation }) {
     return (
       <>
         <View style={styles.title}>
-          <Text style={styles.titleQuestion}>Flashcard List</Text>
+          <Text style={styles.titleList}>Flashcards 📖</Text>
         </View>
-        <View style={styles.questionContainer}>{flashcardButtons}</View>
+        <View style={styles.listContainer}>{flashcardButtons}</View>
       </>
     );
   }
@@ -87,10 +70,7 @@ export default function FlashcardScreen({ navigation }) {
           <Text style={styles.titleLogo}>{chapter.logo}</Text>
         </View>
         <View style={styles.scrollContainer}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
-          >
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
             <Text style={styles.contentText}>
               {chapter.flashcard.definition}
               {chapter.flashcard.why}
@@ -118,14 +98,6 @@ export default function FlashcardScreen({ navigation }) {
     );
   }
 
-  async function handleNextButton() {
-    switch (contentToDisplay) {
-      case 'flashcard':
-        navigation.navigate('Shelves');
-        break;
-    }
-  }
-
   return (
     <View style={styles.mainContainer}>
       {/* Coco */}
@@ -140,12 +112,7 @@ export default function FlashcardScreen({ navigation }) {
       </TouchableOpacity>
 
       {/* contentContainer: Top + marginTop dynamic en fonction de l'inset.top */}
-      <View
-        style={[
-          styles.contentContainer,
-          { marginTop: Math.max(insets.top + 120, 20) },
-        ]}
-      >
+      <View style={[styles.contentContainer, { marginTop: Math.max(insets.top + 120, 20) }]}>
         {(() => {
           switch (contentToDisplay) {
             case 'list':
@@ -157,35 +124,15 @@ export default function FlashcardScreen({ navigation }) {
       </View>
 
       {/* buttonContainer: marginBottom dynamic en fonction de l'inset.bottom */}
-      <View
-        style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}
-      >
-        <Button
-          style={{ width: 110 }}
-          onPress={() => {
-            setShowExitPopup(true);
-          }}
-          type="primary"
-          label="Quitter"
-        />
-        {contentToDisplay !== 'list' ? (
-          <Button
-            style={{ width: 110 }}
-            onPress={() => handleNextButton()}
-            type="primary"
-            label="Suivant"
-          />
+      <View style={[styles.buttonContainer, { marginBottom: 20 + insets.bottom }]}>
+        {contentToDisplay === 'list' ? (
+          <Button style={{ width: 110 }} onPress={() => navigation.goBack()} type="primary" label="Quitter" />
         ) : (
-          <Button style={{ backgroundColor: '', width: 110 }} />
+          <Button style={{ width: 110 }} onPress={() => setContentToDisplay('list')} type="primary" label="Retour" />
         )}
-      </View>
 
-      <ConfirmModal
-        visible={showExitPopup}
-        message="Voulez-vous arrêter la leçon ?"
-        onCancel={() => setShowExitPopup(false)}
-        onConfirm={() => navigation.goBack()}
-      />
+        <Button style={{ backgroundColor: '', width: 110 }} />
+      </View>
 
       <ConfirmModal
         visible={showFlashcardLockedModal}
@@ -201,7 +148,7 @@ const styles = StyleSheet.create({
   // style for the global screen, coco positioning, contentContainer, buttons
   mainContainer: {
     flex: 1,
-    backgroundColor: '#95BE96',
+    backgroundColor: '#CFE5CF',
     position: 'relative', //needed for "coco position:absolute" to work
   },
   coco: {
@@ -267,12 +214,12 @@ const styles = StyleSheet.create({
     height: 30, // Hauteur du dégradé (peut être différente)
     zIndex: 1,
   },
-  // style for Quiz inside of contentContainer
-  titleQuestion: {
+  // style for List inside of contentContainer
+  titleList: {
     fontSize: 18,
     fontWeight: '600',
   },
-  questionContainer: {
+  listContainer: {
     fontSize: 14,
     lineHeight: 28,
   },
