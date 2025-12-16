@@ -24,16 +24,11 @@ export default function RespirationHomeScreen({ navigation }) {
               Choisis la durée de ta séance de respiration. Tu pourras ensuite
               suivre un rythme doux d'inspiration et d'expiration guidé.
             </Text>
+            <View style={styles.bubblePic} />
+
             {/* Perroquet : ouvre modale Chat */}
 
-            {/* <Pressable onPress={() => navigation.navigate("ChatScreen")}>
-              <Image
-                source={require("../../assets/chat/perroquet.png")}
-                style={styles.perroquet}
-              />
-            </Pressable> */}
-
-            <ParrotChatBtn
+                 <ParrotChatBtn
               onPress={() => navigation.navigate("Chat")}
               style={styles.perroquet}
             />
@@ -88,6 +83,8 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 40,
     paddingBottom: 10,
+     positon: "relative",
+    alignSelf: "flex-start",
   },
 
   messageBubble: {
@@ -97,6 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     width: "100%",
     position: "relative",
+    marginVertical: 20,
   },
 
   messageText: {
@@ -104,6 +102,15 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     fontWeight: "500",
     color: "#224C4A",
+  },
+bubblePic: {
+    position: "absolute",
+    width: 16,
+    height: 16,
+    backgroundColor: "#D8F0E4",
+    bottom: -6,
+    right: 80,
+    transform: [{ rotate: "45deg" }],
   },
 
   perroquet: {

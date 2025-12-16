@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -86,13 +86,13 @@ export default function MeditationPlayer({ route, navigation }) {
         const { sound: newSound } = await Audio.Sound.createAsync(
           //createAsync()télécharge le fichier url et renvoie l'objet sound
           { uri: data.audioUrl },
-          { shouldPlay: true }, //lance automatiquement la lecture
+          { shouldPlay: false }, //lancement de la lecture
           (status) => {
             // console.log("status audio :", status); //status: callback appelée en permanence
             if (status.isLoaded) {
               setPosition(status.positionMillis);
               setDurationMs(status.durationMillis);
-              setIsPlaying(status.isPlaying);
+              // setIsPlaying(status.isPlaying);
             }
             // pour modale de félicitations
             if (status.didJustFinish) {
@@ -103,7 +103,7 @@ export default function MeditationPlayer({ route, navigation }) {
         );
 
         setSound(newSound);
-        setIsPlaying(true);
+        setIsPlaying(false);
         setLoading(false);
       });
   }, []);
@@ -162,11 +162,17 @@ export default function MeditationPlayer({ route, navigation }) {
     if (!sound) return;
 
     if (isPlaying) {
-      await sound.pauseAsync(); //met en pause
       setIsPlaying(false);
+      await sound.pauseAsync(); //met en pause
     } else {
-      await sound.playAsync(); //démarrage de la lecture
       setIsPlaying(true);
+      const status = await sound.playAsync(); //await lancement du player
+      if (status.positionMillis === 0) {
+        //vérif supplémentaire
+        await sound.playAsync();
+      } else {
+        await sound.playAsync();
+      }
     }
   };
 
