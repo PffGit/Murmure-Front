@@ -6,15 +6,15 @@ const chaptersSlice = createSlice({
   name: "chapters",
   initialState,
   reducers: {
-    addIndividualChapter: (state, action) => {
+    setIndividualChapter: (state, action) => {
       state.push(action.payload);
     },
-    replaceAllChapters: (state, action) => {
-      state = action.payload;
+    setAllChapters: (state, action) => {
+      return [...action.payload];
     },
   },
 });
 
-export const { addIndividualChapter, replaceAllChapters } = chaptersSlice.actions;
+export const { setIndividualChapter, setAllChapters } = chaptersSlice.actions;
 
 export default chaptersSlice.reducer;

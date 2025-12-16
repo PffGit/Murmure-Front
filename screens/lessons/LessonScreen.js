@@ -10,11 +10,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 
-// Necessary here ? better on app.js ?
-import { BACKEND_ADDRESS } from '../../config';
-
 import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
+
 import { useSelector } from 'react-redux';
 
 const chaptersSafe = [
@@ -71,7 +69,7 @@ const chaptersSafe = [
 export default function LessonScreen({ navigation, route }) {
   const insets = useSafeAreaInsets(); //used to get screen SafeArea dimensions
 
-  const [chapters, setChapters] = useState([]);
+  // const [chapters, setChapters] = useState([]);
 
   const [contentToDisplay, setContentToDisplay] = useState('lesson');
   const [quizQuestionIndex, setQuizQuestionIndex] = useState(0);
@@ -80,28 +78,32 @@ export default function LessonScreen({ navigation, route }) {
   const [showExitPopup, setShowExitPopup] = useState(false); // popup sortie
   const [exitBehavior, setExitBehavior] = useState();
 
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    fetch(`${BACKEND_ADDRESS}/chapters/`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.chapters && data.chapters.length > 0) {
-          setChapters(data.chapters);
-        } else {
-          setChapters(chaptersSafe);
-        }
-      })
-      .catch((err) => {
-        setChapters(chaptersSafe);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   fetch(`${BACKEND_ADDRESS}/chapters/`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       if (data && data.chapters && data.chapters.length > 0) {
+  //         setChapters(data.chapters);
+  //       } else {
+  //         setChapters(chaptersSafe);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       setChapters(chaptersSafe);
+  //     })
+  //     .finally(() => {
+  //       setLoading(false);
+  //     });
+  // }, []);
 
-  if (loading) {
+  const chapters = useSelector((state) => state.chapters);
+  console.log(chapters);
+  chapters && console.log('-------------ls:', chapters[0].title);
+
+  if (!chapters) {
     return <Text>Loading...</Text>;
   }
 
