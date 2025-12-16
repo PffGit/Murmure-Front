@@ -86,7 +86,7 @@ export default function RespirationCountdownScreen({ route, navigation }) {
     if (!isPlaying) return;
 
     // Démarre immédiatement l'animation et les haptics pour la phase actuelle
-    setHasStarted(true);
+
     animateBreathing(phase);
     startHaptics(phase);
 
@@ -237,7 +237,13 @@ export default function RespirationCountdownScreen({ route, navigation }) {
 
         {/* Bouton Play/pause */}
         {!isPlaying ? (
-          <Pressable style={styles.playBtn} onPress={() => setIsPlaying(true)}>
+          <Pressable
+            style={styles.playBtn}
+            onPress={() => {
+              setHasStarted(true);
+              setIsPlaying(true);
+            }}
+          >
             <Text style={styles.playText}>Démarrer</Text>
           </Pressable>
         ) : (
