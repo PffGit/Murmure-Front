@@ -97,15 +97,14 @@ export default function ShelvesScreen({ navigation }) {
         />
 
         {/* --- BOUTON Flashcard --- */}
-        {/* <PulsingButton
+        <PulsingButton
           color="#4b5458ff" // Vert doux
           style={styles.pulsingFlashcard}
           onPress={() => {
-            console.log("ok lien vers Flashcard fonctionnel");
-            navigation.navigate("flashcard");
+            navigation.navigate("Flashcard");
           }}
           // children="Carte"
-        /> */}
+        />
 
         {/* --- BOUTON ChatScreen--- */}
         <PulsingButton
@@ -177,7 +176,7 @@ const styles = StyleSheet.create({
   },
 
   pulsingFlashcard: {
-    bottom: 350,
+    bottom: 310,
     left: 80,
   },
 
