@@ -10,81 +10,219 @@ import {
   Pressable,
 } from 'react-native';
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef,useState  } from 'react';
 import Button from '../../components/Button';
 import Label from '../../components/Label';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useWindowDimensions } from "react-native"; // Pour obtenir les dimensions de l'écran
+import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Important pour le bouton retour
 // Obtenir les dimensions de l'écran pour l'exemple
 const { width, height } = Dimensions.get('window');
 
-// --- 1. LE COMPOSANT BOUTON PULSANT ---
+
+// --- 1. HOOK DE POSITIONNEMENT AMÉLIORÉ --- // Permet de positionner des éléments de façon responsive sur une image
+
+const useResponsiveImagePosition = (imageSource) => {
+    const { width: screenW, height: screenH } = useWindowDimensions(); // Dimensions de l'écran
+    const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 }); // Dimensions par défaut format portrait
+
+    useEffect(() => {
+      // Sur web, on charge l'image pour obtenir ses vraies dimensions
+      if (!Image.resolveAssetSource && typeof imageSource === 'number') {
+        // Sur React Native Web, require() retourne un objet avec une propriété uri ou default
+        const imgUri = imageSource?.default || imageSource;
+        if (typeof window !== 'undefined' && imgUri) {
+          const img = new window.Image();
+          img.onload = () => {
+            setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+            console.log(`[Web] Dimensions réelles de l'image: ${img.naturalWidth}x${img.naturalHeight}`);
+          };
+          img.src = imgUri;
+        }
+      }
+    }, [imageSource]);
+
+    // Vérification de sécurité pour éviter les crashes
+    let imageData = null;
+
+    if (Image.resolveAssetSource) {
+      // Sur mobile (iOS/Android)
+      imageData = Image.resolveAssetSource(imageSource);
+    } else {
+      // Sur web, on utilise les dimensions chargées dynamiquement
+      imageData = imageDimensions;
+    }
+
+    if (!imageData) {
+      console.warn("Image source invalide");
+      return {
+        getPos: () => ({ position: 'absolute' }),
+        scale: 1,
+        originalW: 0,
+        originalH: 0
+      };
+    }
+
+    const { width: originalW, height: originalH } = imageData; // Dimensions originales de l'image
+
+    const screenRatio = screenW / screenH;              // Ratio écran
+    const imageRatio = originalW / originalH;           // Ratio image
+
+    let scale, xOffset, yOffset;                        // Variables pour le calcul
+
+    if (screenRatio > imageRatio) {                     // L'image est plus "haute" que l'écran
+      scale = screenW / originalW;                      // On base l'échelle sur la largeur
+      xOffset = 0;
+      yOffset = (screenH - originalH * scale) / 2;      // Centrage vertical
+    } else {
+      scale = screenH / originalH;                      // On base l'échelle sur la hauteur
+      yOffset = 0;
+      xOffset = (screenW - originalW * scale) / 2;      // Centrage horizontal
+    }
+
+    const getPos = (originalX, originalY) => ({         // position après mise à l'échelle et centrage
+      left: xOffset + originalX * scale,
+      top: yOffset + originalY * scale,
+      position: 'absolute',
+    });
+
+    return {
+      getPos,           // Fonction de positionnement
+      scale,            // Facteur d'échelle pour adapter les tailles
+      originalW,        // Largeur originale de l'image
+      originalH,         // Hauteur originale de l'image
+    };
+};
+
+
+
+// --- 2. LE COMPOSANT BOUTON PULSANT ---
+
 // Ce composant gère sa propre animation pour être réutilisable.
-const PulsingButton = ({ onPress, color, style }) => {
+const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
   // Valeur animée qui ira de 0 à 1 en boucle
-  const animation = useRef(new Animated.Value(0)).current;
+    const animation = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    // Définition de la boucle d'animation
-    Animated.loop(
-      Animated.timing(animation, {
-        toValue: 1,
-        duration: 2000, // Durée d'un battement (1.5s)
-        useNativeDriver: true, // Important pour la fluidité sur mobile
-      })
-    ).start();
-  }, [animation]);
+    useEffect(() => {
+      // Définition de la boucle d'animation
+      Animated.loop(
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 2000,                         // Durée d'un battement (2s)
+          useNativeDriver: true,                  // Important pour la fluidité sur mobile
+        })
+      ).start();
+    }, [animation]);
 
-  // Interpolation : Transformer la valeur 0->1 en Échelle (taille)
-  const scaleAnim = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 2.5], // Le cercle grandit de 1x à 2.5x sa taille
-  });
+    // Interpolation : Transformer la valeur 0->1 en Échelle (taille)
+    const scaleAnim = animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 2.5],                      // Le cercle grandit de 1x à 2.5x sa taille
+    });
 
-  // Interpolation : Transformer la valeur 0->1 en Opacité
-  const opacityAnim = animation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 0], // L'opacité passe de 0.8 à invisible (0)
-  });
+    // Interpolation : Transformer la valeur 0->1 en Opacité
+    const opacityAnim = animation.interpolate({
+      inputRange: [0, 1],
+      outputRange: [1, 0],                        // L'opacité passe de 1 à invisible (0)
+    });
 
-  // Couleur dynamique basée sur la prop 'color'
-  // const ringColor = color || '#FF5722';
-  // const centerColor = color || '#FF5722';
-  const rippleColor = color || '#FF5722';
+    // Couleur dynamique basée sur la prop 'color'
+    const rippleColor = color || "#FF5722";
 
-  return (
+    return (
     // RETURN DES PULSING BUTTON
-    <View style={[styles.buttonWrapper, style]}>
-      {/* L'anneau animé en arrière-plan */}
-      <Animated.View
-        style={[
-          styles.pulseRing,
-          {
-            backgroundColor: rippleColor,
-            // On applique les transformations calculées au-dessus
-            transform: [{ scale: scaleAnim }],
-            opacity: opacityAnim,
-          },
-        ]}
-      />
+        <View style={[styles.buttonWrapper, style, {
+          width: 100 * buttonScale,
+          height: 50 * buttonScale,
+        }]}>
+          {/* L'anneau animé en arrière-plan */}
+          <Animated.View
+            style={[
+              styles.pulseRing,                  // Style de base de l'anneau
+              {
+                backgroundColor: rippleColor,
+                width: 20 * buttonScale,
+                height: 20 * buttonScale,
+                borderRadius: 10 * buttonScale,
+                // On applique les transformations calculées au-dessus
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+              },
+            ]}
+          />
 
-      {/* Le bouton central cliquable */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={onPress}
-        style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
-      />
-    </View>
+          {/* Le bouton central cliquable */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={onPress}
+            style={[styles.buttonCenter, {
+              backgroundColor: "transparent",
+              width: 30 * buttonScale,
+              height: 30 * buttonScale,
+              borderRadius: 15 * buttonScale,
+            }]}
+          />
+        </View>
   );
 };
 
 export default function ShelvesScreen({ navigation }) {
+    const backgroundImage = require('../../assets/etagereCoco.png');
+    const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage); // Utilisation du hook amélioré
+    const insets = useSafeAreaInsets(); // Pour gérer l'encoche du téléphone
+
+    // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
+    // Utilisation de pourcentages des dimensions originales pour un meilleur responsive
+    const posMeditation = getPos(originalW * 0.55, originalH * 0.36);
+    const posRespiration = getPos(originalW * 0.42, originalH * 0.52);
+    const posChat = getPos(originalW * 0.74, originalH * 0.52);
+
+
+
   return (
     <ImageBackground
       style={styles.background}
-      source={require('../../assets/etagereCoco.png')}
+      source={backgroundImage}
       resizeMode="cover"
-    >
+     >
+
+      {/* --- ZONE 1 : LES BOUTONS DU DÉCOR (Position Absolue sur l'image) --- */}
+
+        {/* Méditation */}
+      <PulsingButton
+        color="#f1c972ff"
+        style={posMeditation}
+        buttonScale={scale}
+        onPress={() => navigation.navigate('MeditationHome')}
+      />
+
+        {/* Respiration */}
+      <PulsingButton
+        color="#93c29eff"
+        style={posRespiration}
+        buttonScale={scale}
+        onPress={() => navigation.navigate('RespirationHome')}
+      />
+
+        {/* Chat */}
+      <PulsingButton
+        color="#f8f6f3ff"
+        style={posChat}
+        buttonScale={scale}
+        onPress={() => navigation.navigate('Chat')}
+      />
+
+
+      {/* --- ZONE 2 : UI FLOTTANTE (Bouton Retour) --- */}
+        {/* pointerEvents="box-none" est CRUCIAL : cela permet de cliquer "à travers" 
+            les zones vides de ce conteneur pour atteindre les boutons en dessous */}
+
+      <View
+        style={[styles.uiContainer, { paddingTop: Math.max(insets.top, 20) }]}
+        pointerEvents="box-none"
+       >
+      
+  
       {/* Bouton Précédent */}
       <View style={styles.navigationContainer}>
         <Pressable
@@ -96,116 +234,40 @@ export default function ShelvesScreen({ navigation }) {
         </Pressable>
       </View>
 
-      <View style={styles.container}>
-        {/* --- BOUTON  Meditation --- */}
-        <PulsingButton
-          color="#f1c972ff" // Or pale
-          style={styles.pulsingMeditation}
-          onPress={() => {
-            console.log('ok lien vers MeditationHome fonctionnel');
-            navigation.navigate('MeditationHome');
-          }}
-          // children="Etagère"
-        />
 
-        {/* --- BOUTON Respiration --- */}
-        <PulsingButton
-          color="#93c29eff" // Vert doux
-          style={styles.pulsingRespiration}
-          onPress={() => {
-            console.log('ok lien vers RespirationHome fonctionnel');
-            navigation.navigate('RespirationHome');
-          }}
-          // children="Carte"
-        />
-
-        {/* --- BOUTON Flashcard --- */}
-        <PulsingButton
-          color="#4b5458ff" // Vert doux
-          style={styles.pulsingFlashcard}
-          onPress={() => {
-            navigation.navigate('Flashcard');
-          }}
-          // children="Carte"
-        />
-
-        {/* --- BOUTON ChatScreen--- */}
-        <PulsingButton
-          color="#f8f6f3ff" // Vert doux
-          style={styles.pulsingChatScreen}
-          onPress={() => {
-            console.log('ok lien vers ChatScreen fonctionnel');
-            navigation.navigate('Chat');
-          }}
-          // children="Carte"
-        />
       </View>
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  // styles pour l'ecran
+  // Styles pour l'écran
   background: {
     flex: 1,
     width: '100%',
     height: '100%',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
   },
 
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  // Conteneur pour l'interface utilisateur (bouton retour)
+  uiContainer: {
+    flex: 1,
     paddingHorizontal: 20,
   },
 
-  // Styles du composant PulsingButton
+  // Styles du composant PulsingButton (les tailles sont maintenant gérées dynamiquement)
   buttonWrapper: {
-    position: 'absolute',
-    width: 100, // Taille globale de la zone du bouton = plus large zone cliquable
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10, // zIndex assure que le bouton est au-dessus de l'image
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 10, // Assure que le bouton est au-dessus de l'image
+    // Astuce debug : décommenter pour visualiser les zones cliquables
+    // backgroundColor: 'rgba(255,0,0,0.3)',
   },
   pulseRing: {
-    position: 'absolute', // L'anneau est derrière le centre
-    width: 20, // Taille de base de l'anneau
-    height: 20,
-    borderRadius: 20, // Pour faire un cercle parfait (moitié de la taille)
+    position: "absolute", // L'anneau est derrière le centre
   },
   buttonCenter: {
-    width: 30, // Le centre est un peu plus petit que l'anneau de départ
-    height: 30,
-    borderRadius: 15,
-    // Petite ombre pour le relief (optionnel)
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5, // Ombre pour Android
-  },
-
-  // Positionnement spécifique des boutons sur l'écran
-  pulsingMeditation: {
-    bottom: 650,
-    left: 0,
-  },
-
-  pulsingRespiration: {
-    bottom: 510,
-    right: 20,
-  },
-
-  pulsingFlashcard: {
-    bottom: 310,
-    left: 80,
-  },
-
-  pulsingChatScreen: {
-    bottom: 505,
-    left: 50,
+    // Tailles dynamiques appliquées via props
   },
   // Bouton Back
   navigationContainer: {

@@ -21,11 +21,11 @@ const InfoBubble = ({ message, visible, onClose }) => {
       }).start(() => console.log('[InfoBubble] ✨ Animation apparition terminée'));
 
       // Auto-fermeture après 4 secondes
-      // console.log('[InfoBubble] ⏳ Démarrage du Timer (20s)');
+      console.log('[InfoBubble] ⏳ Démarrage du Timer (200s)');
       const timer = setTimeout(() => {
         // console.log('[InfoBubble] ⏰ Timer écoulé -> Appel de onClose()');
         onClose();
-      }, 20000);
+      }, 200000);                           // 200 secondes nombre qui peut etre modifie pour la duree de l'infobulle
 
       // Fonction de nettoyage
       return () => {
@@ -41,7 +41,7 @@ const InfoBubble = ({ message, visible, onClose }) => {
         useNativeDriver: true,
       }).start(() => console.log('[InfoBubble] fin de la presence de l\'infobulle'));
     }
-  }, [visible]); // Dépendances du useEffect
+  }, [visible]);                      // Dépendances du useEffect
 
   // LOGIQUE CRITIQUE ICI
   if (!visible) {

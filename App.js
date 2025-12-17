@@ -52,7 +52,7 @@ export default function App() {
   // 4. Cette fonction s'exécute dès que la View principale est affichée
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
-      console.log("--- [App.js] 5. App prête, on cache le Splash Screen natif --- Apparition de l'ecran choisi ---");
+      // console.log("--- [App.js] 5. App prête, on cache le Splash Screen natif --- Apparition de l'ecran choisi ---");
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);

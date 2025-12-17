@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 
+
 export default function WelcomeScreen({ navigation }) {
 
   useEffect(() => {
     // Juste un timer pour la transition visuelle
-    // console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,5s...");
+    // console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,2s ...");
     
     const timer = setTimeout(() => {
       // console.log("--- [WelcomeScreen] 6. Navigation vers l'ecran principal HOME.");

@@ -106,7 +106,7 @@ export default function FlashcardScreen({ navigation }) {
         style={[styles.coco, { top: Math.max(insets.top, 20) }]}
       >
         <Image
-          source={require('../../assets/coco.png')}
+          source={require('../../assets/perroquet.png')}
           style={{ width: 130, height: 130, transform: [{ scaleX: -1 }] }}
         />
       </TouchableOpacity>

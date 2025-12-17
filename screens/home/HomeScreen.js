@@ -9,27 +9,88 @@ import {
   ImageBackground,
   Image,
   Animated,
-  Dimensions,
-  Pressable,
+  useWindowDimensions,
 } from 'react-native';
-
-import { useDispatch, useSelector } from 'react-redux';
-import { setAllChapters } from '../../reducers/chapters';
+import { useSelector, useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
-import ParrotChatBtn from '../../components/ParrotChatBtn';
+import ParrotChatBtn from '../../components/ParrotChatBtn'; // Bouton perroquet pour chat
+import { useFocusEffect } from '@react-navigation/native'; // Pour gérer le focus de l'écran
 
 // import pour les infobulles
-import AsyncStorage from '@react-native-async-storage/async-storage'; // pour le stockage local
 import InfoBubble from '../../components/InfoBulleHome'; // composant infobulle personnalisé
 
-// Obtenir les dimensions de l'écran pour l'exemple
-const { width, height } = Dimensions.get('window'); // dimensions de l'écran utilisé pour positionner les boutons
+// --- 1. HOOK DE POSITIONNEMENT AMÉLIORÉ --- // Permet de positionner des éléments de façon responsive sur une image
 
-// --- 1. LE COMPOSANT BOUTON PULSANT ---
+const useResponsiveImagePosition = (imageSource) => {
+  const { width: screenW, height: screenH } = useWindowDimensions(); // Dimensions de l'écran
+  const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 }); // Dimensions par défaut format portrait
+
+  useEffect(() => {
+    //le useEffect sert à charger les dimensions de l'image sur le web
+    // Sur web, on charge l'image pour obtenir ses vraies dimensions
+    if (!Image.resolveAssetSource && typeof imageSource === 'number') {
+      // Sur React Native Web, require() retourne un objet avec une propriété uri ou default
+      const imgUri = imageSource?.default || imageSource;
+      if (typeof window !== 'undefined' && imgUri) {
+        const img = new window.Image();
+        img.onload = () => {
+          setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
+          console.log(`[Web] Dimensions réelles de l'image: ${img.naturalWidth}x${img.naturalHeight}`);
+        };
+        img.src = imgUri;
+      }
+    }
+  }, [imageSource]);
+
+  // Vérification de sécurité pour éviter les crashes
+  let imageData = null;
+
+  if (Image.resolveAssetSource) {
+    // Sur mobile (iOS/Android)
+    imageData = Image.resolveAssetSource(imageSource);
+  } else {
+    // Sur web, on utilise les dimensions chargées dynamiquement
+    imageData = imageDimensions;
+  }
+
+  const { width: originalW, height: originalH } = imageData; // variable dimensions originale de l'image
+
+  const screenRatio = screenW / screenH; // variable screenRatio pour Ratio écran
+  const imageRatio = originalW / originalH; // variable imageRatio pour Ratio image
+
+  let scale, xOffset, yOffset; // variables de calcul
+
+  if (screenRatio > imageRatio) {
+    // L'image est plus "haute" que l'écran
+    scale = screenW / originalW;
+    xOffset = 0;
+    yOffset = (screenH - originalH * scale) / 2; // Centrage vertical
+  } else {
+    scale = screenH / originalH;
+    yOffset = 0;
+    xOffset = (screenW - originalW * scale) / 2; // Centrage horizontal
+  }
+
+  const getPos = (originalX, originalY) => ({
+    // position après mise à l'échelle et centrage
+    left: xOffset + originalX * scale,
+    top: yOffset + originalY * scale,
+    position: 'absolute',
+  });
+
+  return {
+    getPos, // Fonction de positionnement
+    scale, // Facteur d'échelle pour adapter les tailles
+    originalW, // Largeur originale de l'image
+    originalH, // Hauteur originale de l'image
+  };
+};
+
+// --- 2. LE COMPOSANT BOUTON PULSANT ---
 
 // Ce composant gère sa propre animation pour être réutilisable.
-const PulsingButton = ({ onPress, color, style }) => {
+const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
   // Valeur animée qui ira de 0 à 1 en boucle
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -38,7 +99,7 @@ const PulsingButton = ({ onPress, color, style }) => {
     Animated.loop(
       Animated.timing(animation, {
         toValue: 1,
-        duration: 2000, // Durée d'un battement (1.5s)
+        duration: 2000, // Durée d'un battement (2s)
         useNativeDriver: true, // Important pour la fluidité sur mobile
       })
     ).start();
@@ -53,23 +114,33 @@ const PulsingButton = ({ onPress, color, style }) => {
   // Interpolation : Transformer la valeur 0->1 en Opacité
   const opacityAnim = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [1, 0], // L'opacité passe de 0.8 à invisible (0)
+    outputRange: [1, 0], // L'opacité passe de 1 à invisible (0)
   });
 
   // Couleur dynamique basée sur la prop 'color'
-  // const ringColor = color || '#FF5722';
-  // const centerColor = color || '#FF5722';
   const rippleColor = color || '#FF5722';
 
+  // RETURN DES PULSING BUTTON
   return (
-    // RETURN DES PULSING BUTTON
-    <View style={[styles.buttonWrapper, style]}>
+    <View
+      style={[
+        styles.buttonWrapper,
+        style,
+        {
+          width: 50 * buttonScale,
+          height: 50 * buttonScale,
+        },
+      ]}
+    >
       {/* L'anneau animé en arrière-plan */}
       <Animated.View
         style={[
           styles.pulseRing,
           {
             backgroundColor: rippleColor,
+            width: 40 * buttonScale,
+            height: 40 * buttonScale,
+            borderRadius: 20 * buttonScale,
             // On applique les transformations calculées au-dessus
             transform: [{ scale: scaleAnim }],
             opacity: opacityAnim,
@@ -81,23 +152,40 @@ const PulsingButton = ({ onPress, color, style }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={onPress}
-        style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
+        style={[
+          styles.buttonCenter,
+          {
+            backgroundColor: 'transparent',
+            width: 30 * buttonScale,
+            height: 30 * buttonScale,
+            borderRadius: 15 * buttonScale,
+          },
+        ]}
       />
     </View>
   );
 };
 
 export default function HomeScreen({ navigation }) {
-  // Récupérer le statut de connexion depuis Redux
-  const { isConnected, username } = useSelector((state) => state.userConnection);
+  const backgroundImage = require('../../assets/homescreen.png');
+  const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage); // Utilisation du hook amélioré
+  // getPos pour positionner, scale pour adapter les tailles
 
-  // integration de l'infobulle
-  const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' });
+  // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
+
+  const posEtagere = getPos(originalW * -0.22, originalH * 0.55); // PULSING BUTTON ÉTAGÈRE
+  const posCarte = getPos(originalW * 0.33, originalH * 0.55); // PULSING BUTTON CARTE
+
+  const posPerroquet = getPos(originalW * 0.32, originalH * 0.195); // POSITION PERROQUET CHAT
+
+  const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
+
+  const [infoBubble, setInfoBubble] = useState({ visible: false, message: '' }); // integration de l'infobulle
 
   // 1. Log à chaque rendu (très important pour voir les mises à jour d'état)
-  // console.log(
-  //   `[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`
-  // );
+  console.log(
+    `[HomeScreen -- Infobulle] 🎨 Rendu. État bulle: visible=${infoBubble.visible}, msg="${infoBubble.message}"`
+  );
 
   useEffect(() => {
     // console.log('[HomeScreen -- Infobulle] 🚀 useEffect (Mount) -> Lancement de checkVisitCount');
@@ -123,40 +211,31 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   // NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur
+
+  useEffect(() => {
+    checkVisitCount(); // Appel initial pour vérifier le statut de visite
+  }, [isConnected]); // Dépendance sur isConnected pour réagir aux changements de statut
+
+  // NOUVEAU CODE - Basé sur le statut de connexion de l'utilisateur CONNECTED VS NON CONNECTED
   const checkVisitCount = () => {
-    // Vérifier si l'utilisateur est connecté
-    AsyncStorage.getItem('userToken') // Récupère le token de l'utilisateur depuis AsyncStorage
-      // rappel: asyncStorage est utilisé pour stocker des données localement sur le device; similaire au localStorage du navigateur web
+    // Utiliser le statut de connexion depuis Redux au lieu d'AsyncStorage
 
-      .then((userToken) => {
-        const isLoggedIn = userToken !== null; // Si le token existe, l'utilisateur est connecté
-
-        if (!isLoggedIn) {
-          // Si l'utilisateur n'est PAS connecté -> toujours message de bienvenue
-          // console.log(
-          //   '[HomeScreen -- Infobulle]  Utilisateur NON connecté -> Message de bienvenue'
-          // );
-          setInfoBubble({
-            visible: true,
-            message:
-              "✨ Bienvenue sur Murmure! ✨\n\nSouhaitez vous me parler ou commencer votre parcours?\nJe vous invite à cliquer sur l'étagère ou la porte vers le jardin.\n\n À très vite ! 😊",
-          });
-        } else {
-          // Si l'utilisateur EST connecté -> message "ravi de vous revoir"
-          // console.log(
-          //   '[HomeScreen -- Infobulle] ✅ Utilisateur connecté -> Message "Ravi de vous revoir"'
-          // );
-          setInfoBubble({
-            visible: true,
-            message:
-              '✨ Ravi de vous revoir! ✨\n\nPrêt à continuer?\n\nSouhaitez-vous continuer vers votre parcours ou initier une séance de relaxation?\n\nOu peut-être préférez-vous me parler?',
-          });
-        }
-      })
-      .catch((error) => {
-        // Gestion des erreurs
-        console.error('[HomeScreen -- Infobulle] ❌ Erreur lors de la vérification:', error);
+    if (!isConnected) {
+      // Si l'utilisateur n'est PAS connecté -> message de bienvenue
+      // console.log('[HomeScreen -- Infobulle]  Utilisateur NON connecté -> Message de bienvenue');
+      setInfoBubble({
+        visible: true,
+        message:
+          "✨ Bienvenue sur Murmure! ✨\n\nSouhaitez vous me parler ou commencer votre parcours?\nJe vous invite à cliquer sur l'étagère ou la porte vers le jardin.\n\n À très vite ! 😊",
       });
+    } else {
+      // Si l'utilisateur EST connecté -> message "ravi de vous revoir"
+      // console.log('[HomeScreen -- Infobulle] ✅ Utilisateur connecté -> Message "Ravi de vous revoir"');
+      setInfoBubble({
+        visible: true,
+        message: `✨ Ravi de vous revoir ${username}! ✨\n\nPrêt à continuer?\n\nSouhaitez-vous continuer vers votre parcours ou initier une séance de relaxation?\n\nOu peut-être préférez-vous me parler?`,
+      });
+    }
   };
 
   const closeInfoBubble = () => {
@@ -165,7 +244,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   return (
-    <ImageBackground style={styles.background} source={require('../../assets/homescreen.png')} resizeMode="cover">
+    <ImageBackground style={styles.background} source={require('../../assets/homescreenCadre.png')} resizeMode="cover">
       <View style={styles.container}>
         {/* Bulle d'information */}
         <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
@@ -173,58 +252,46 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.labelContainer}>
           {/* Bouton Mon Compte en haut à gauche */}
           <Button
-            label="Mon compte"
+            label={isConnected ? 'Mon compte' : 'Se Connecter'} // Texte dynamique basé sur le redux
             type="primary"
             style={styles.compteButton}
             onPress={() => {
-              // console.log('ok le btn mon compte fonctionne!');
+              // console.log("ok le btn mon compte fonctionne!");
               navigation.navigate('Compte');
             }}
           />
 
           {/* Affichage du statut de connexion */}
-          {isConnected ? (
-            <Text style={styles.compteStatus}>Chez {username}</Text>
-          ) : (
-            <Text style={styles.compteStatus}>non connecté</Text>
-          )}
+          {/* {isConnected && (
+                      <Text style={styles.compteStatus}>
+                        connected
+                      </Text>
+                    )} */}
 
           <View style={styles.header}>
             <View style={styles.messageBubble}>
-              {/* <Text style={styles.messageText}>
-                                    Bonjour!{"\n"}
-                                    Comment allez-vous aujourd'hui ?{"\n"}
-                                    Souhaitez vous me parler ou commencer votre parcours? <Text style={{ fontStyle: 'italic' }}>(cliquez sur la porte vers le jardin){"\n"}</Text>
-                                    Ou faire une activité en particuler ? <Text style={{ fontStyle: 'italic' }}>(selectionnez l'étagère)</Text>
-                              </Text> */}
-
               {/* Perroquet : ouvre screen Chat */}
-              <Pressable
+              <ParrotChatBtn
                 onPress={() => {
                   navigation.navigate('Chat');
                 }}
-              >
-                <Image source={require('../../assets/chat/perroquet.png')} style={styles.perroquet} />
-              </Pressable>
+                style={[
+                  posPerroquet,
+                  {
+                    width: 100 * scale,
+                    height: 100 * scale,
+                    transform: [{ scaleX: -1 }], // Miroir horizontal
+                  },
+                ]}
+              />
             </View>
           </View>
 
-          {/* <View style={styles.messageia}>
-                      <Text
-                        style={styles.dialogueperroquet}
-                        placeholderTextColor="#224C4A"
-                        onPress={() => {
-                          console.log("ok le lien vers chatscreen fonctionne!");
-                          navigation.navigate("Chat");
-                        }}>
-                        {/* Ecris moi si tu veux me parler ! *
-                      </Text>
-                    </View>   */}
-
-          {/* --- BOUTON 1 (Bas à gauche) --- */}
+          {/* --- BOUTON 1 (Étagère - Bas à gauche) --- */}
           <PulsingButton
-            color="#ebaa20ff" // Or pale
-            style={styles.pulsingEtagere}
+            color="#ebaa20ff" // Jaune doux
+            style={posEtagere}
+            buttonScale={scale}
             onPress={() => {
               // console.log("ok le lien vers l'etagere fonctionne!");
               navigation.navigate('Shelves');
@@ -232,19 +299,18 @@ export default function HomeScreen({ navigation }) {
             children="Etagère"
           />
 
-          {/* --- BOUTON 2 (Bas à droite) --- */}
+          {/* --- BOUTON 2 (Carte - Bas à droite) --- */}
           <PulsingButton
             color="#2aa148ff" // Vert doux
-            style={styles.pulsingCarte}
+            style={posCarte}
+            buttonScale={scale}
             onPress={() => {
-              // console.log('ok le lien vers la map fonctionne!');
+              // console.log("ok le lien vers la map fonctionne!");
               navigation.navigate('Map');
             }}
             children="Carte"
           />
         </View>
-
-        {/* Ici ajouter lien vers mon compte */}
       </View>
     </ImageBackground>
   );
@@ -257,15 +323,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'flex-end',
     alignItems: 'center',
-  },
-
-  perroquet: {
-    position: 'absolute',
-    top: 163,
-    left: 90,
-    width: 100,
-    height: 100,
-    transform: [{ scaleX: -1 }],
   },
 
   container: {
@@ -283,46 +340,12 @@ const styles = StyleSheet.create({
   },
 
   messageBubble: {
-    // backgroundColor: "#D8F0E4",
     paddingVertical: 18,
     paddingHorizontal: 20,
     borderRadius: 18,
     width: '100%',
     position: 'relative',
-    // left:20,
-    // marginBottom: 100,
   },
-
-  //  messageText: {
-  //   fontSize: 15.5,
-  //   lineHeight: 21,
-  //   fontWeight: "500",
-  //   color: "#224C4A",
-  // },
-
-  // messageia: {
-  //   position: "relative",
-  //   backgroundColor: "#D8F0E4",
-  //   paddingVertical: 20,
-  //   paddingHorizontal: 20,
-  //   borderRadius: 12,
-  //   marginTop: 0,
-  //   right: 140,
-  // padding: 40,
-  // width: '100%',
-  // alignSelf: 'center ',
-  // },
-
-  // dialogueperroquet: {
-  //   position: "absolute",
-  //   top: 6,
-  //   color: "#224C4A",
-  //   fontSize: 15.5,
-  //   fontWeight: "500",
-  //   textAlign: "center",
-  //   lineHeight: 21,
-  //   marginLeft: 20,
-  // },
 
   header: {
     paddingTop: 100,
@@ -332,10 +355,11 @@ const styles = StyleSheet.create({
   compteButton: {
     position: 'absolute',
     top: 1,
-    right: 60,
+    right: 50,
     marginBottom: 50,
     marginTop: 30,
     zIndex: 100,
+    width: 158, // Largeur fixe pour éviter le décalage lors du changement de texte
   },
 
   compteStatus: {
@@ -351,29 +375,19 @@ const styles = StyleSheet.create({
     zIndex: 100,
   },
 
-  // Styles du composant PulsingButton
+  // Styles du composant PulsingButton (les tailles sont maintenant gérées dynamiquement)
   buttonWrapper: {
-    position: 'absolute', // Permet de placer le bouton sur l'image
-    width: 50, // Taille globale de la zone du bouton
-    height: 50,
+    position: 'absolute',
     justifyContent: 'center',
     alignItems: 'center',
-    // zIndex assure que le bouton est au-dessus de l'image
     zIndex: 10,
   },
 
   pulseRing: {
-    position: 'absolute', // L'anneau est derrière le centre
-    width: 40, // Taille de base de l'anneau
-    height: 40,
-    borderRadius: 20, // Pour faire un cercle parfait (moitié de la taille)
+    position: 'absolute',
   },
 
   buttonCenter: {
-    width: 30, // Le centre est un peu plus petit que l'anneau de départ
-    height: 30,
-    borderRadius: 15,
-    // Petite ombre pour le relief (optionnel)
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -381,18 +395,7 @@ const styles = StyleSheet.create({
     elevation: 5, // Ombre pour Android
   },
 
-  pulsingEtagere: {
-    bottom: 370,
-    right: 140,
-  },
-
-  pulsingCarte: {
-    bottom: 370,
-    left: 130,
-  },
-
   infoBubble: {
-    // backgroundColor: "#D8F0E4",
     paddingVertical: 70,
     paddingHorizontal: 20,
   },
