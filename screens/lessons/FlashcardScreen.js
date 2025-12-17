@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 
+import ParrotChatBtn from '../../components/ParrotChatBtn'; // Bouton perroquet pour chat
 import ConfirmModal from '../../components/ConfirmModal';
 import Button from '../../components/Button';
 import { useSelector } from 'react-redux';
@@ -31,7 +32,7 @@ export default function FlashcardScreen({ navigation }) {
               }}
               type="question"
               label={chap.title}
-              style={{ alignItems: "flexStart" }}
+              style={{ alignItems: 'flexStart' }}
             />
           );
         } else {
@@ -101,15 +102,19 @@ export default function FlashcardScreen({ navigation }) {
   return (
     <View style={styles.mainContainer}>
       {/* Coco */}
-      <TouchableOpacity
-        onPress={() => navigation.navigate('Chat')}
-        style={[styles.coco, { top: Math.max(insets.top, 20) }]}
-      >
-        <Image
-          source={require('../../assets/perroquet.png')}
-          style={{ width: 130, height: 130, transform: [{ scaleX: -1 }] }}
-        />
-      </TouchableOpacity>
+      <ParrotChatBtn
+        onPress={() => {
+          navigation.navigate('Chat');
+        }}
+        size={130}
+        style={[
+          styles.coco,
+          {
+            transform: [{ scaleX: -1 }],
+            top: Math.max(insets.top, 20),
+          },
+        ]}
+      />
 
       {/* contentContainer: Top + marginTop dynamic en fonction de l'inset.top */}
       <View style={[styles.contentContainer, { marginTop: Math.max(insets.top + 120, 20) }]}>
@@ -154,8 +159,6 @@ const styles = StyleSheet.create({
   coco: {
     position: 'absolute', //needed to put coco where we want in the main container. Defaut position behavior top: 0
     right: '10%', //place it 10% to the right of the screen
-    width: 130,
-    height: 130,
     zIndex: 2, // This define the priority of the image (2 > 1 so image is in front of contentContainer)
   },
   contentContainer: {
