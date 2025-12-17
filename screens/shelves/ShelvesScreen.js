@@ -8,15 +8,15 @@ import {
   TouchableOpacity,
   Image,
   Pressable,
-} from "react-native";
+} from 'react-native';
 
-import React, { useEffect, useRef } from "react";
-import Button from "../../components/Button";
-import Label from "../../components/Label";
-import { Ionicons } from "@expo/vector-icons"; 
+import React, { useEffect, useRef } from 'react';
+import Button from '../../components/Button';
+import Label from '../../components/Label';
+import { Ionicons } from '@expo/vector-icons';
 
 // Obtenir les dimensions de l'écran pour l'exemple
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 // --- 1. LE COMPOSANT BOUTON PULSANT ---
 // Ce composant gère sa propre animation pour être réutilisable.
@@ -50,7 +50,7 @@ const PulsingButton = ({ onPress, color, style }) => {
   // Couleur dynamique basée sur la prop 'color'
   // const ringColor = color || '#FF5722';
   // const centerColor = color || '#FF5722';
-  const rippleColor = color || "#FF5722";
+  const rippleColor = color || '#FF5722';
 
   return (
     // RETURN DES PULSING BUTTON
@@ -72,7 +72,7 @@ const PulsingButton = ({ onPress, color, style }) => {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={onPress}
-        style={[styles.buttonCenter, { backgroundColor: "transparent" }]}
+        style={[styles.buttonCenter, { backgroundColor: 'transparent' }]}
       />
     </View>
   );
@@ -82,31 +82,28 @@ export default function ShelvesScreen({ navigation }) {
   return (
     <ImageBackground
       style={styles.background}
-      source={require("../../assets/etagereCoco.png")}
+      source={require('../../assets/etagereCoco.png')}
       resizeMode="cover"
     >
-
-        {/* Bouton Précédent */}
- <View style={styles.navigationContainer}>
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={20} color="#224c4aff" />
-            <Text style={styles.backButtonText}>Retour</Text>
-          </Pressable>
-        </View>
+      {/* Bouton Précédent */}
+      <View style={styles.navigationContainer}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+          <Text style={styles.backButtonText}>Retour</Text>
+        </Pressable>
+      </View>
 
       <View style={styles.container}>
-
-
         {/* --- BOUTON  Meditation --- */}
         <PulsingButton
           color="#f1c972ff" // Or pale
           style={styles.pulsingMeditation}
           onPress={() => {
-            console.log("ok lien vers MeditationHome fonctionnel");
-            navigation.navigate("MeditationHome");
+            console.log('ok lien vers MeditationHome fonctionnel');
+            navigation.navigate('MeditationHome');
           }}
           // children="Etagère"
         />
@@ -116,8 +113,8 @@ export default function ShelvesScreen({ navigation }) {
           color="#93c29eff" // Vert doux
           style={styles.pulsingRespiration}
           onPress={() => {
-            console.log("ok lien vers RespirationHome fonctionnel");
-            navigation.navigate("RespirationHome");
+            console.log('ok lien vers RespirationHome fonctionnel');
+            navigation.navigate('RespirationHome');
           }}
           // children="Carte"
         />
@@ -127,7 +124,7 @@ export default function ShelvesScreen({ navigation }) {
           color="#4b5458ff" // Vert doux
           style={styles.pulsingFlashcard}
           onPress={() => {
-            navigation.navigate("Flashcard");
+            navigation.navigate('Flashcard');
           }}
           // children="Carte"
         />
@@ -137,8 +134,8 @@ export default function ShelvesScreen({ navigation }) {
           color="#f8f6f3ff" // Vert doux
           style={styles.pulsingChatScreen}
           onPress={() => {
-            console.log("ok lien vers ChatScreen fonctionnel");
-            navigation.navigate("Chat");
+            console.log('ok lien vers ChatScreen fonctionnel');
+            navigation.navigate('Chat');
           }}
           // children="Carte"
         />
@@ -151,29 +148,29 @@ const styles = StyleSheet.create({
   // styles pour l'ecran
   background: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    justifyContent: "flex-end",
-    alignItems: "center",
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 
   container: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
 
   // Styles du composant PulsingButton
   buttonWrapper: {
-    position: "absolute",
+    position: 'absolute',
     width: 100, // Taille globale de la zone du bouton = plus large zone cliquable
     height: 50,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 10, // zIndex assure que le bouton est au-dessus de l'image
   },
   pulseRing: {
-    position: "absolute", // L'anneau est derrière le centre
+    position: 'absolute', // L'anneau est derrière le centre
     width: 20, // Taille de base de l'anneau
     height: 20,
     borderRadius: 20, // Pour faire un cercle parfait (moitié de la taille)
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     // Petite ombre pour le relief (optionnel)
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -210,8 +207,8 @@ const styles = StyleSheet.create({
     bottom: 505,
     left: 50,
   },
-// Bouton Back
- navigationContainer: {
+  // Bouton Back
+  navigationContainer: {
     position: 'absolute',
     bottom: 40,
     left: 0,
@@ -223,20 +220,18 @@ const styles = StyleSheet.create({
   },
 
   backButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     paddingVertical: 12,
     paddingHorizontal: 18,
     borderRadius: 10,
-    backgroundColor: "#f1f7f4d2",
+    backgroundColor: '#f1f7f4d2',
   },
 
   backButtonText: {
-    color: "#224c4aff",
+    color: '#224c4aff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
-
-
 });
