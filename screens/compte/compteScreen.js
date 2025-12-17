@@ -1,5 +1,4 @@
 import {
-  SafeAreaView,
   View,
   Text,
   TextInput,
@@ -8,6 +7,7 @@ import {
   } from "react-native";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { logout, updateUsername as updateUsernameAction } from "../../reducers/userConnection";
 import Button from "../../components/Button";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -16,8 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CompteScreen({ navigation }) {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
 
- 
   const { isConnected, username, userToken } = useSelector((state) => state.userConnection);
 
   const [isEditingName, setIsEditingName] = useState(false);
@@ -138,8 +138,7 @@ const handleAccountDeletedConfirm = () => {
         style={styles.background}
         resizeMode="cover"
       >
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
           <Text style={styles.title}>Gestion du compte</Text>
           <Text style={styles.welcomeText}>Bonjour {username} !</Text>
 
@@ -194,7 +193,7 @@ const handleAccountDeletedConfirm = () => {
           <Button
             type="back"
             onPress={() => navigation.navigate("Home")}
-            style={styles.backButton}
+            style={[styles.backButton, { top: insets.top + 10 }]}
           />
 
           <ConfirmModal
@@ -225,8 +224,7 @@ const handleAccountDeletedConfirm = () => {
             singleButton={true}
           />
         </View>
-      </SafeAreaView>
-    </ImageBackground>
+      </ImageBackground>
     );
   }
 
@@ -237,8 +235,7 @@ const handleAccountDeletedConfirm = () => {
       style={styles.background}
       resizeMode="cover"
     >
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
         <Text style={styles.title}>Gestion du compte</Text>
 
         <View style={styles.buttonsContainer}>
@@ -260,10 +257,9 @@ const handleAccountDeletedConfirm = () => {
         <Button
           type="back"
           onPress={() => navigation.navigate("Home")}
-          style={styles.backButton}
+          style={[styles.backButton, { top: insets.top + 10 }]}
         />
       </View>
-    </SafeAreaView>
   </ImageBackground>
   );
 }
@@ -274,14 +270,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  safeArea: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
   container: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 60,
   },
   title: {
     fontSize: 28,
@@ -330,7 +321,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: "absolute",
-    top: 40,
     left: 20,
   },
 });

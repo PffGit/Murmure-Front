@@ -12,6 +12,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../../components/Button';
 import ParrotChatBtn from '../../components/ParrotChatBtn'; // Bouton perroquet pour chat
@@ -167,6 +168,7 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
 };
 
 export default function HomeScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
   const backgroundImage = require('../../assets/homescreen.png');
   const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage); // Utilisation du hook amélioré
   // getPos pour positionner, scale pour adapter les tailles
@@ -250,11 +252,11 @@ export default function HomeScreen({ navigation }) {
         <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble} />
 
         <View style={styles.labelContainer}>
-          {/* Bouton Mon Compte en haut à gauche */}
+          {/* Bouton Mon Compte en haut à droite */}
           <Button
             label={isConnected ? 'Mon compte' : 'Se Connecter'} // Texte dynamique basé sur le redux
             type="primary"
-            style={styles.compteButton}
+            style={[styles.compteButton, { top: insets.top + 10, right: 20 }]}
             onPress={() => {
               // console.log("ok le btn mon compte fonctionne!");
               navigation.navigate('Compte');
@@ -354,10 +356,6 @@ const styles = StyleSheet.create({
 
   compteButton: {
     position: 'absolute',
-    top: 1,
-    right: 50,
-    marginBottom: 50,
-    marginTop: 30,
     zIndex: 100,
     width: 158, // Largeur fixe pour éviter le décalage lors du changement de texte
   },

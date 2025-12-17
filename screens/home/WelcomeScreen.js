@@ -1,41 +1,42 @@
 import React, { useEffect } from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function WelcomeScreen({ navigation }) {
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     // Juste un timer pour la transition visuelle
     // console.log("--- [WelcomeScreen] 4. Affichage du screen paysage pendant 1,2s ...");
-    
+
     const timer = setTimeout(() => {
       // console.log("--- [WelcomeScreen] 6. Navigation vers l'ecran principal HOME.");
       navigation.replace("Home"); // .replace évite de pouvoir revenir en arrière sur l'écran de bienvenue
     }, 1200); // 1,2 secondes pour le splashscreen
-      
+
     return () => clearTimeout(timer);
   }, [navigation]);
 
   return (
-    <ImageBackground 
+    <ImageBackground
       style={styles.background}
       source={require('../../assets/paysage-bienvenue.png')}
       resizeMode="cover"
     >
-      <View style={styles.texte}>
+      <View style={[styles.texte, { paddingTop: insets.top }]}>
         <Text style={styles.title}>Bienvenue dans Murmure</Text>
-      </View> 
+      </View>
     </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
   texte: {
-    position: 'absolute',
-    top: 370,
-    width: '100%',
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    width: '100%',
   },
   background: {
     flex: 1,

@@ -5,7 +5,7 @@ import WelcomeScreen from '../screens/home/WelcomeScreen';
 
 import HomeScreen from '../screens/home/HomeScreen';
 
-import CompteScreen from '../screens/compte/CompteScreen';
+import CompteScreen from '../screens/compte/compteScreen';
 
 import ShelvesScreen from '../screens/shelves/ShelvesScreen';
 
