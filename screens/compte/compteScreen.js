@@ -4,6 +4,7 @@ import {
   TextInput,
   StyleSheet,
   ImageBackground,
+  Pressable
   } from "react-native";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -246,7 +247,6 @@ export default function CompteScreen({ navigation }) {
           onPress={() => navigation.navigate("Home")}
           style={[styles.backButton, { top: insets.top + 10 }]}
         />
-      </View>
   </ImageBackground>
   );
 }

@@ -38,7 +38,6 @@ const useResponsiveImagePosition = (imageSource) => {
           img.src = imgUri; 
         }
       }
-    }
   }, [imageSource]);
 
   // Vérification de sécurité pour éviter les crashes
@@ -177,12 +176,6 @@ export default function ShelvesScreen({ navigation }) {
     const posRespiration = getPos(originalW * 0.363, originalH * 0.432);    //   35% de la largeur, 45% de la hauteur
     const posChat = getPos(originalW * 0.59, originalH * 0.41);             //   60% de la largeur, 40% de la hauteur
     const posFlashcard = getPos(originalW * 0.65, originalH * 0.59);        //   65% de la largeur, 60% de la hauteur
-
-  // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
-  // Utilisation de pourcentages des dimensions originales pour un meilleur responsive
-  const posMeditation = getPos(originalW * 0.55, originalH * 0.36);
-  const posRespiration = getPos(originalW * 0.42, originalH * 0.52);
-  const posChat = getPos(originalW * 0.74, originalH * 0.52);
 
   return (
     <ImageBackground style={styles.background} source={backgroundImage} resizeMode="cover">
