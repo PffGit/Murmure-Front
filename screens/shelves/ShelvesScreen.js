@@ -11,22 +11,21 @@ import {
 } from 'react-native';
 
 import React, { useEffect, useRef,useState  } from 'react';
-import Button from '../../components/Button';
-import Label from '../../components/Label';
 import { Ionicons } from '@expo/vector-icons';
-import { useWindowDimensions } from "react-native"; // Pour obtenir les dimensions de l'écran
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // Important pour le bouton retour
-// Obtenir les dimensions de l'écran pour l'exemple
-const { width, height } = Dimensions.get('window');
+import { useWindowDimensions } from "react-native";                   // Pour obtenir les dimensions de l'écran
+import { useSafeAreaInsets } from 'react-native-safe-area-context';   // Important pour le bouton retour
+
+
+const { width, height } = Dimensions.get('window');                   // Obtenir les dimensions de l'écran pour l'exemple
 
 
 // --- 1. HOOK DE POSITIONNEMENT AMÉLIORÉ --- // Permet de positionner des éléments de façon responsive sur une image
 
 const useResponsiveImagePosition = (imageSource) => {
-    const { width: screenW, height: screenH } = useWindowDimensions(); // Dimensions de l'écran
-    const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 }); // Dimensions par défaut format portrait
+    const { width: screenW, height: screenH } = useWindowDimensions();                      // Dimensions de l'écran
+    const [imageDimensions, setImageDimensions] = useState({ width: 1080, height: 1920 });  // Dimensions par défaut format portrait
 
-    useEffect(() => {
+    useEffect(() => { // Effectue le calcul des dimensions réelles de l'image
       // Sur web, on charge l'image pour obtenir ses vraies dimensions
       if (!Image.resolveAssetSource && typeof imageSource === 'number') {
         // Sur React Native Web, require() retourne un objet avec une propriété uri ou default
@@ -37,7 +36,7 @@ const useResponsiveImagePosition = (imageSource) => {
             setImageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
             console.log(`[Web] Dimensions réelles de l'image: ${img.naturalWidth}x${img.naturalHeight}`);
           };
-          img.src = imgUri;
+          img.src = imgUri; 
         }
       }
     }, [imageSource]);
@@ -90,7 +89,7 @@ const useResponsiveImagePosition = (imageSource) => {
       getPos,           // Fonction de positionnement
       scale,            // Facteur d'échelle pour adapter les tailles
       originalW,        // Largeur originale de l'image
-      originalH,         // Hauteur originale de l'image
+      originalH,        // Hauteur originale de l'image
     };
 };
 
@@ -107,7 +106,7 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
       // Définition de la boucle d'animation
       Animated.loop(
         Animated.timing(animation, {
-          toValue: 1,
+          toValue: 1, 
           duration: 2000,                         // Durée d'un battement (2s)
           useNativeDriver: true,                  // Important pour la fluidité sur mobile
         })
@@ -116,7 +115,7 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
 
     // Interpolation : Transformer la valeur 0->1 en Échelle (taille)
     const scaleAnim = animation.interpolate({
-      inputRange: [0, 1],
+      inputRange: [0, 1], 
       outputRange: [1, 2.5],                      // Le cercle grandit de 1x à 2.5x sa taille
     });
 
@@ -132,8 +131,8 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
     return (
     // RETURN DES PULSING BUTTON
         <View style={[styles.buttonWrapper, style, {
-          width: 100 * buttonScale,
-          height: 50 * buttonScale,
+          width: 100 * buttonScale, 
+          height: 90 * buttonScale, // Ajuste la taille du conteneur pour le positionnement
         }]}>
           {/* L'anneau animé en arrière-plan */}
           <Animated.View
@@ -141,9 +140,9 @@ const PulsingButton = ({ onPress, color, style, buttonScale = 1 }) => {
               styles.pulseRing,                  // Style de base de l'anneau
               {
                 backgroundColor: rippleColor,
-                width: 20 * buttonScale,
-                height: 20 * buttonScale,
-                borderRadius: 10 * buttonScale,
+                width: 60 * buttonScale,
+                height: 60 * buttonScale,
+                borderRadius: 60 * buttonScale,
                 // On applique les transformations calculées au-dessus
                 transform: [{ scale: scaleAnim }],
                 opacity: opacityAnim,
@@ -171,12 +170,13 @@ export default function ShelvesScreen({ navigation }) {
     const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage); // Utilisation du hook amélioré
     const insets = useSafeAreaInsets(); // Pour gérer l'encoche du téléphone
 
+
     // --- DÉFINITION DES POSITIONS EN POURCENTAGES ---
     // Utilisation de pourcentages des dimensions originales pour un meilleur responsive
-    const posMeditation = getPos(originalW * 0.55, originalH * 0.36);
-    const posRespiration = getPos(originalW * 0.42, originalH * 0.52);
-    const posChat = getPos(originalW * 0.74, originalH * 0.52);
-
+    const posMeditation = getPos(originalW * 0.49, originalH * 0.27);       //   50% de la largeur, 30% de la hauteur
+    const posRespiration = getPos(originalW * 0.363, originalH * 0.432);    //   35% de la largeur, 45% de la hauteur
+    const posChat = getPos(originalW * 0.59, originalH * 0.41);             //   60% de la largeur, 40% de la hauteur
+    const posFlashcard = getPos(originalW * 0.65, originalH * 0.59);        //   65% de la largeur, 60% de la hauteur
 
 
   return (
@@ -210,6 +210,14 @@ export default function ShelvesScreen({ navigation }) {
         style={posChat}
         buttonScale={scale}
         onPress={() => navigation.navigate('Chat')}
+      />
+
+        {/* Flashcard */}
+      <PulsingButton
+        color="#776b73ff" 
+        style={posFlashcard}
+        buttonScale={scale}
+        onPress={() => navigation.navigate('Flashcard')}
       />
 
 
