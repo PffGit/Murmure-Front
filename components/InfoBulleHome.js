@@ -75,11 +75,9 @@ const styles = StyleSheet.create({
   infoBubbleContainer: {
     position: 'absolute',
     top: 60,
-    bottom: 670,
-   
-    left: 20,
-    right: 20,
     zIndex: 1000,
+    width: '100%', // Prend 100% de la largeur disponible dans le parent (qui a déjà du padding)
+    alignSelf: 'center', // S'assure d'être bien centré
   },
 
   infoBubble: {

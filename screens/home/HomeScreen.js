@@ -196,10 +196,10 @@ export default function HomeScreen({ navigation }) {
   return (
     <ImageBackground style={styles.background} source={require('../../assets/homescreenCadre.png')} resizeMode="cover">
       <View style={[styles.container, { top: Math.max(insets.top - 16, 10)}]}>
-        
+
         {/* Bulle d'information */}
         <InfoBubble message={infoBubble.message} visible={infoBubble.visible} onClose={closeInfoBubble}  />
-
+        
         <View style={styles.labelContainer}>
 
           {/* Bouton Mon Compte en haut à gauche */}
@@ -270,8 +270,8 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     paddingHorizontal: 20,
   },
 
