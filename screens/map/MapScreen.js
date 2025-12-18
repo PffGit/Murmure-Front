@@ -28,12 +28,12 @@ export default function MapScreen({ navigation }) {
   const { getPos, scale, originalW, originalH } = useResponsiveImagePosition(backgroundImage);
 
   // Positions des chapitres en pourcentages de l'image originale
-  const posChapitre1 = getPos(originalW * 0.55, originalH * 0.87);
-  const posChapitre2 = getPos(originalW * 0.33, originalH * 0.76);
-  const posChapitre3 = getPos(originalW * 0.72, originalH * 0.74);
-  const posChapitre4 = getPos(originalW * 0.1, originalH * 0.62);
-  const posChapitre5 = getPos(originalW * 0.45, originalH * 0.5);
-  const posChapitre6 = getPos(originalW * 0.72, originalH * 0.3);
+  const posChapitre1 = getPos(originalW * 0.40, originalH * 0.87);
+  const posChapitre2 = getPos(originalW * 0.13, originalH * 0.76);
+  const posChapitre3 = getPos(originalW * 0.70, originalH * 0.65);
+  const posChapitre4 = getPos(originalW * 0.2, originalH * 0.6);
+  const posChapitre5 = getPos(originalW * 0.34, originalH * 0.47);
+  const posChapitre6 = getPos(originalW * 0.60, originalH * 0.35);
 
   // Récupérer le progressNb et le statut de connexion de l'utilisateur depuis Redux
   const userProgressNb = useSelector((state) => state.userConnection?.userProgress || 0);
