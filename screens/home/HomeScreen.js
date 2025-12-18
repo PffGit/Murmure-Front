@@ -110,7 +110,7 @@ export default function HomeScreen({ navigation }) {
 
   const posEtagere = getPos(originalW * -0.2, originalH * 0.5); // PULSING BUTTON ÉTAGÈRE
   const posCarte = getPos(originalW * 0.36, originalH * 0.5); // PULSING BUTTON CARTE
-  const posPerroquet = getPos(originalW * 0.48, originalH * 0.18); // POSITION PERROQUET CHAT - juste au-dessus de la porte
+  const posPerroquet = getPos(originalW * 0.48, originalH * 0.128); // POSITION PERROQUET CHAT - juste au-dessus de la porte
 
   const { isConnected, username } = useSelector((state) => state.userConnection); // Récupérer le statut de connexion depuis Redux
 

@@ -137,75 +137,73 @@ export default function CompteScreen({ navigation }) {
         style={styles.background}
         resizeMode="cover"
       >
-        <SafeAreaView style={styles.safeArea}>
-          <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
-            <Text style={styles.title}>Gestion du compte</Text>
-            <Text style={styles.welcomeText}>Bonjour {username} !</Text>
+        <View style={[styles.container, { paddingTop: insets.top + 20 }]}>
+          <Text style={styles.title}>Gestion du compte</Text>
+          <Text style={styles.welcomeText}>Bonjour {username} !</Text>
 
-            {isEditingName ? (
-              <View style={styles.editNameContainer}>
-                <Text style={styles.label}>Nouveau nom</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Votre nouveau nom"
-                  value={newUsername}
-                  onChangeText={setNewUsername}
-                  autoCapitalize="words"
-                />
-                <Button label="Valider" type="primary" onPress={handleValidateNewName} style={styles.button} />
-                <Button label="Annuler" type="question" onPress={() => setIsEditingName(false)} style={styles.button} />
-              </View>
-            ) : (
-              <View style={styles.buttonsContainer}>
-                <Button label="Changer mon nom" type="primary" onPress={handleChangeName} style={styles.button} />
-
-                <Button label="Me déconnecter" type="primary" onPress={handleLogout} style={styles.button} />
-
-                <Button
-                  label="Supprimer mon compte"
-                  type="primary"
-                  onPress={handleDeleteAccount}
-                  style={[styles.button, styles.deleteButton]}
-                />
-              </View>
-            )}
-
-            <View style={styles.navigationContainer}>
-              <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={20} color="#224c4aff" />
-                <Text style={styles.backButtonText}>Retour</Text>
-              </Pressable>
+          {isEditingName ? (
+            <View style={styles.editNameContainer}>
+              <Text style={styles.label}>Nouveau nom</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Votre nouveau nom"
+                value={newUsername}
+                onChangeText={setNewUsername}
+                autoCapitalize="words"
+              />
+              <Button label="Valider" type="primary" onPress={handleValidateNewName} style={styles.button} />
+              <Button label="Annuler" type="question" onPress={() => setIsEditingName(false)} style={styles.button} />
             </View>
+          ) : (
+            <View style={styles.buttonsContainer}>
+              <Button label="Changer mon nom" type="primary" onPress={handleChangeName} style={styles.button} />
 
-            <ConfirmModal
-              visible={showDeleteModal}
-              message="Êtes-vous sûr de vouloir supprimer votre compte ?"
-              onConfirm={() => setShowDeleteModal(false)}
-              onCancel={confirmDeleteAccount}
-            />
+              <Button label="Me déconnecter" type="primary" onPress={handleLogout} style={styles.button} />
 
-            <ConfirmModal
-              visible={showGoodbyeModal}
-              message={`À bientôt ${username}.`}
-              onConfirm={confirmLogout}
-              singleButton={true}
-            />
+              <Button
+                label="Supprimer mon compte"
+                type="primary"
+                onPress={handleDeleteAccount}
+                style={[styles.button, styles.deleteButton]}
+              />
+            </View>
+          )}
 
-            <ConfirmModal
-              visible={showNameChangedModal}
-              message={`Nouveau nom : ${username}`}
-              onConfirm={handleNameChangedConfirm}
-              singleButton={true}
-            />
-
-            <ConfirmModal
-              visible={showAccountDeletedModal}
-              message="Votre compte a été supprimé"
-              onConfirm={handleAccountDeletedConfirm}
-              singleButton={true}
-            />
+          <View style={styles.navigationContainer}>
+            <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+              <Ionicons name="arrow-back" size={20} color="#224c4aff" />
+              <Text style={styles.backButtonText}>Retour</Text>
+            </Pressable>
           </View>
-        </SafeAreaView>
+
+          <ConfirmModal
+            visible={showDeleteModal}
+            message="Êtes-vous sûr de vouloir supprimer votre compte ?"
+            onConfirm={() => setShowDeleteModal(false)}
+            onCancel={confirmDeleteAccount}
+          />
+
+          <ConfirmModal
+            visible={showGoodbyeModal}
+            message={`À bientôt ${username}.`}
+            onConfirm={confirmLogout}
+            singleButton={true}
+          />
+
+          <ConfirmModal
+            visible={showNameChangedModal}
+            message={`Nouveau nom : ${username}`}
+            onConfirm={handleNameChangedConfirm}
+            singleButton={true}
+          />
+
+          <ConfirmModal
+            visible={showAccountDeletedModal}
+            message="Votre compte a été supprimé"
+            onConfirm={handleAccountDeletedConfirm}
+            singleButton={true}
+          />
+        </View>
       </ImageBackground>
     );
   }
