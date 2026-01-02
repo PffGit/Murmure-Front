@@ -1,0 +1,28 @@
+{
+  "cli": {
+    "version": ">= 14.1.3"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "http://192.168.1.13:3000"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://your-render-app.onrender.com"
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://your-render-app.onrender.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
